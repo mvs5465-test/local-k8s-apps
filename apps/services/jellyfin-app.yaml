@@ -28,7 +28,7 @@ spec:
         volumes:
           - name: tmp-files
             hostPath:
-              path: /tmp/files
+              path: /Users/matthewschwartz/clusterstorage/files
               type: DirectoryOrCreate
 
         volumeMounts:
