@@ -2,6 +2,19 @@
 
 ArgoCD Application definitions for system and user-facing services. Pair with [`local-k8s-argocd`](https://github.com/mvs5465/local-k8s-argocd) infrastructure repo.
 
+## Storage Configuration
+
+Data is stored under `~/clusterstorage/` with the following structure:
+```
+~/clusterstorage/
+├── files/              ← Jellyfin media files (nginx file server)
+└── outline/
+    ├── files/         ← Outline application data
+    └── postgres/      ← PostgreSQL database files
+```
+
+See `local-k8s-argocd` README for Colima mount configuration.
+
 ## Apps Included
 
 ### System Services

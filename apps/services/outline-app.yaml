@@ -165,7 +165,7 @@ spec:
           data:
             enabled: true
             type: hostPath
-            hostPath: /Users/matthewschwartz/outline/files
+            hostPath: /Users/matthewschwartz/clusterstorage/outline/files
             advancedMounts:
               main:
                 main:
@@ -173,7 +173,7 @@ spec:
           postgres-data:
             enabled: true
             type: hostPath
-            hostPath: /Users/matthewschwartz/outline/postgres
+            hostPath: /Users/matthewschwartz/clusterstorage/outline/postgres
             advancedMounts:
               postgres:
                 main:
