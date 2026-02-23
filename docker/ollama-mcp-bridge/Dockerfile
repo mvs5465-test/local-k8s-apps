@@ -14,6 +14,9 @@ ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_OLLAMA_MCP_BRIDGE=0.9.2
 
 RUN uv sync
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 8000
 
-ENTRYPOINT ["uv", "run", "ollama-mcp-bridge"]
+ENTRYPOINT ["/entrypoint.sh"]
