@@ -19,8 +19,8 @@ spec:
             containers:
               main:
                 image:
-                  repository: flexnst/ollama-mcp-bridge
-                  tag: latest
+                  repository: jonigl/ollama-mcp-bridge
+                  tag: v0.9.2
                 workingDir: /app
                 command:
                   - uv

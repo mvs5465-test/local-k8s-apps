@@ -9,7 +9,7 @@ spec:
   project: cluster
   source:
     repoURL: https://helm.otwld.com/
-    targetRevision: 1.44.0
+    targetRevision: 1.45.0
     chart: ollama
     helm:
       releaseName: ollama
