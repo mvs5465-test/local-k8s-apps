@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-mcp
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cluster
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.x
+    helm:
+      releaseName: prometheus-mcp
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: ghcr.io/pab1it0/prometheus-mcp-server
+                  tag: latest
+                env:
+                  - name: PROMETHEUS_URL
+                    value: "http://prometheus-server.monitoring.svc.cluster.local:80"
+                  - name: PROMETHEUS_MCP_SERVER_TRANSPORT
+                    value: "http"
+                  - name: PROMETHEUS_MCP_BIND_HOST
+                    value: "0.0.0.0"
+                  - name: PROMETHEUS_MCP_BIND_PORT
+                    value: "8080"
+        service:
+          main:
+            controller: main
+            ports:
+              http:
+                port: 8080
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
