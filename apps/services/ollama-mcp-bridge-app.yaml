@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ollama-mcp-bridge
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cluster
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.x
+    helm:
+      releaseName: ollama-mcp-bridge
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: flexnst/ollama-mcp-bridge
+                  tag: latest
+                env:
+                  - name: OLLAMA_URL
+                    value: "http://ollama.ai.svc.cluster.local:11434"
+
+        service:
+          main:
+            controller: main
+            ports:
+              http:
+                port: 8000
+
+        configMaps:
+          mcp-config:
+            data:
+              mcp-config.json: |
+                {
+                  "mcpServers": {
+                    "prometheus": {
+                      "url": "http://prometheus-mcp.monitoring.svc.cluster.local:8080/mcp",
+                      "transport": "streamable-http"
+                    }
+                  }
+                }
+
+        persistence:
+          mcp-config:
+            type: configMap
+            name: ollama-mcp-bridge-mcp-config
+            advancedMounts:
+              main:
+                main:
+                  - path: /app/mcp-config.json
+                    subPath: mcp-config.json
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ai
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
