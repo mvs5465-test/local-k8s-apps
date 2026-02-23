@@ -19,13 +19,8 @@ spec:
             containers:
               main:
                 image:
-                  repository: flexnst/ollama-mcp-bridge
+                  repository: ghcr.io/mvs5465/ollama-mcp-bridge
                   tag: latest
-                workingDir: /app
-                command:
-                  - uv
-                  - run
-                  - ollama-mcp-bridge
                 args:
                   - --ollama-url
                   - http://ollama.ai.svc.cluster.local:11434
