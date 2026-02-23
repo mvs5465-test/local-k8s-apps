@@ -23,6 +23,8 @@ spec:
                   tag: latest
                 workingDir: /app
                 command:
+                  - uv
+                  - run
                   - ollama-mcp-bridge
                 args:
                   - --ollama-url
