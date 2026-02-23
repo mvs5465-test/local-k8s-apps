@@ -14,13 +14,9 @@ spec:
     helm:
       releaseName: ollama-mcp-bridge
       values: |
-        defaults:
-          deployment:
-            spec:
-              template:
-                spec:
-                  imagePullSecrets:
-                    - name: ghcr-secret
+        defaultPodOptions:
+          imagePullSecrets:
+            - name: ghcr-secret
 
         controllers:
           main:
