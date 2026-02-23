@@ -16,4 +16,4 @@ RUN uv sync
 
 EXPOSE 8000
 
-CMD ["uv", "run", "ollama-mcp-bridge"]
+ENTRYPOINT ["uv", "run", "ollama-mcp-bridge"]
