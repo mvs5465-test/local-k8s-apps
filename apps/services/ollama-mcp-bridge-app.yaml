@@ -34,6 +34,7 @@ spec:
 
         configMaps:
           mcp-config:
+            enabled: true
             data:
               mcp-config.json: |
                 {
@@ -47,13 +48,12 @@ spec:
 
         persistence:
           mcp-config:
+            enabled: true
             type: configMap
             name: ollama-mcp-bridge-mcp-config
-            advancedMounts:
-              main:
-                main:
-                  - path: /app/mcp-config.json
-                    subPath: mcp-config.json
+            globalMounts:
+              - path: /app/mcp-config.json
+                subPath: mcp-config.json
   destination:
     server: https://kubernetes.default.svc
     namespace: ai
