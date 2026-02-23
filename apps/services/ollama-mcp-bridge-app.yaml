@@ -22,6 +22,9 @@ spec:
                   repository: flexnst/ollama-mcp-bridge
                   tag: latest
                 workingDir: /app
+                args:
+                  - --ollama-url
+                  - http://ollama.ai.svc.cluster.local:11434
                 env:
                   - name: OLLAMA_URL
                     value: "http://ollama.ai.svc.cluster.local:11434"
