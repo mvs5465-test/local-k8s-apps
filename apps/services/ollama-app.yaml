@@ -17,7 +17,7 @@ spec:
         ollama:
           models:
             pull:
-              - functiongemma
+              - phi4-mini
 
         resources:
           requests:
