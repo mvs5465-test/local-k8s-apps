@@ -22,6 +22,7 @@ spec:
           main:
             containers:
               main:
+                command: ["/entrypoint.sh"]
                 image:
                   repository: ghcr.io/mvs5465/ollama-mcp-bridge
                   tag: latest
