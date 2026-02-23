@@ -20,7 +20,7 @@ spec:
               main:
                 image:
                   repository: ghcr.io/pab1it0/prometheus-mcp-server
-                  tag: v1.5.2
+                  tag: 1.5.3
                 env:
                   - name: PROMETHEUS_URL
                     value: "http://prometheus-server.monitoring.svc.cluster.local:80"
