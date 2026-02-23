@@ -57,7 +57,8 @@ spec:
             type: configMap
             name: ollama-mcp-bridge-mcp-config
             globalMounts:
-              - path: /app
+              - path: /app/mcp-config.json
+                subPath: mcp-config.json
   destination:
     server: https://kubernetes.default.svc
     namespace: ai
