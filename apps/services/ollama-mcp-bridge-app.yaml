@@ -28,7 +28,7 @@ spec:
                   tag: latest
                 args:
                   - --ollama-url
-                  - http://ollama.ai.svc.cluster.local:11434
+                  - http://ollama-external.ai.svc.cluster.local:11434
 
         service:
           main:
