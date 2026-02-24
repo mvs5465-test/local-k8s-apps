@@ -27,9 +27,12 @@ spec:
             cpu: 4000m
             memory: 5Gi
 
-        persistentVolume:
-          enabled: true
-          size: 10Gi
+        persistence:
+          ollama:
+            enabled: true
+            type: hostPath
+            hostPath: /Users/matthewschwartz/clusterstorage/ollama
+            mountPath: /root/.ollama
 
         gpu:
           enabled: false
