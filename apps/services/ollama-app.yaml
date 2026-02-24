@@ -1,44 +1,26 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+apiVersion: v1
+kind: Service
 metadata:
-  name: ollama
-  namespace: argocd
-  finalizers:
-  - resources-finalizer.argocd.argoproj.io
+  name: ollama-external
+  namespace: ai
+  labels:
+    app: ollama
 spec:
-  project: cluster
-  source:
-    repoURL: https://helm.otwld.com/
-    targetRevision: 1.45.0
-    chart: ollama
-    helm:
-      releaseName: ollama
-      values: |
-        resources:
-          requests:
-            cpu: 1000m
-            memory: 1Gi
-          limits:
-            cpu: 4000m
-            memory: 5Gi
-
-        persistence:
-          ollama:
-            enabled: true
-            type: hostPath
-            hostPath: /Users/matthewschwartz/clusterstorage/ollama
-            mountPath: /root/.ollama
-
-        gpu:
-          enabled: false
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: ai
-
-  syncPolicy:
-    syncOptions:
-    - CreateNamespace=true
-    automated:
-      prune: true
-      selfHeal: true
+  type: ExternalName
+  externalName: host.docker.internal
+  ports:
+  - port: 11434
+    targetPort: 11434
+    protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: ollama-external
+  namespace: ai
+spec:
+  subsets:
+  - addresses:
+    - ip: 127.0.0.1
+    ports:
+    - port: 11434
