@@ -10,7 +10,7 @@ destinations:
     url: http://prometheus-server.monitoring.svc.cluster.local/api/v1/write
   - name: loki
     type: loki
-    url: http://loki.monitoring.svc.cluster.local/loki/api/v1/push
+    url: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push
 
 clusterMetrics:
   enabled: true
