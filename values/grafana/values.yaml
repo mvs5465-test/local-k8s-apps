@@ -48,6 +48,11 @@ datasources:
       url: http://prometheus-server.monitoring.svc.cluster.local:80
       access: proxy
       isDefault: true
+    - name: Mimir
+      uid: mimir
+      type: prometheus
+      url: http://mimir-gateway.monitoring.svc.cluster.local/prometheus
+      access: proxy
     - name: Loki
       uid: loki
       type: loki
@@ -74,6 +79,14 @@ dashboardProviders:
       editable: true
       options:
         path: /var/lib/grafana/dashboards/kubernetes-community
+    - name: 'observability-community'
+      orgId: 1
+      folder: 'Observability Community'
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/observability-community
 
 dashboards:
   kubernetes-community:
@@ -89,3 +102,8 @@ dashboards:
     k8s-views-pods:
       url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/v3.0.1/dashboards/k8s-views-pods.json
       datasource: Prometheus
+  observability-community:
+    loki-operational:
+      url: https://raw.githubusercontent.com/grafana/loki/v3.6.5/production/loki-mixin-compiled/dashboards/loki-operational.json
+    mimir-overview:
+      url: https://raw.githubusercontent.com/grafana/mimir/mimir-3.0.1/operations/mimir-mixin-compiled/dashboards/mimir-overview.json
