@@ -86,12 +86,6 @@ spec:
                     href: http://jellyfin.lan
                     description: Media server and streaming
                     icon: jellyfin.png
-            - Tools:
-                - Outline:
-                    href: http://outline.lan
-                    description: Collaborative wiki and knowledge base
-                    icon: outline.png
-
           widgets:
             - kubernetes:
                 cluster:

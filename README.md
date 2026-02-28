@@ -7,10 +7,7 @@ ArgoCD Application definitions for system and user-facing services. Pair with [`
 Data is stored under `~/clusterstorage/` with the following structure:
 ```
 ~/clusterstorage/
-├── files/              ← Jellyfin media files (nginx file server)
-└── outline/
-    ├── files/         ← Outline application data
-    └── postgres/      ← PostgreSQL database files
+└── files/              ← Jellyfin media files (nginx file server)
 ```
 
 See `local-k8s-argocd` README for Colima mount configuration.
@@ -34,7 +31,6 @@ See `local-k8s-argocd` README for Colima mount configuration.
 | 🌌 **Cluster Home** | Custom dark-themed service dashboard | [cluster-home-app.yaml](apps/services/cluster-home-app.yaml) |
 | 📊 **Gatus** | Uptime monitoring & status page | [gatus-app.yaml](apps/services/gatus-app.yaml) |
 | 🎬 **Jellyfin** | Media server | [jellyfin-app.yaml](apps/services/jellyfin-app.yaml) |
-| 📖 **Outline** | Personal wiki with real-time collaboration | [outline-app.yaml](apps/services/outline-app.yaml) |
 | 💬 **Open WebUI Chat** | Chat interface for Ollama | [chat-app.yaml](apps/services/chat-app.yaml) |
 | 🤖 **Ollama** | LLM inference server | [ollama-app.yaml](apps/services/ollama-app.yaml) |
 

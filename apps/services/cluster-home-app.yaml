@@ -74,12 +74,6 @@ spec:
                       "description": "Media library and streaming."
                     },
                     {
-                      "name": "Outline",
-                      "icon": "OL",
-                      "url": "http://outline.lan",
-                      "description": "Collaborative wiki and knowledge base."
-                    },
-                    {
                       "name": "Wiki",
                       "icon": "WK",
                       "url": "http://wiki.lan",
