@@ -48,7 +48,7 @@ dashboards:
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
@@ -78,7 +78,7 @@ dashboards:
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^phase$/", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
@@ -110,7 +110,7 @@ dashboards:
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
@@ -148,7 +148,7 @@ dashboards:
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
@@ -179,11 +179,11 @@ dashboards:
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
-                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval]))",
+                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) or vector(0)",
                   "instant": true,
                   "refId": "A"
                 }
@@ -210,7 +210,7 @@ dashboards:
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
@@ -253,7 +253,7 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) / clamp_min(sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"}), 0.001) * 100",
+                  "expr": "(sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) / clamp_min(sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"}), 0.001) * 100) or vector(0)",
                   "instant": true,
                   "refId": "A"
                 }
@@ -319,7 +319,7 @@ dashboards:
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
@@ -350,7 +350,7 @@ dashboards:
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
@@ -409,7 +409,7 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval]))",
+                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) or vector(0)",
                   "legendFormat": "Usage",
                   "refId": "A"
                 },
@@ -608,7 +608,7 @@ dashboards:
                 "justifyMode": "center",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value_and_name"
+                "textMode": "value"
               },
               "targets": [
                 {
