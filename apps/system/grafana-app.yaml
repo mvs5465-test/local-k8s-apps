@@ -20,6 +20,7 @@ spec:
           - $values/values/grafana/dashboards/cluster-overview.yaml
           - $values/values/grafana/dashboards/loki-metrics.yaml
           - $values/values/grafana/dashboards/pod-metrics.yaml
+          - $values/values/grafana/dashboards/pod-deep-dive.yaml
           - $values/values/grafana/dashboards/argocd-overview.yaml
 
   destination:
