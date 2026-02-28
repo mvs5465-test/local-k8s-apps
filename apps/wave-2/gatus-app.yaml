@@ -68,6 +68,12 @@ spec:
               conditions:
                 - "[STATUS] == 200"
 
+            - name: tempo
+              url: http://tempo.monitoring.svc.cluster.local:3200/ready
+              interval: 60s
+              conditions:
+                - "[STATUS] == 200"
+
             - name: argocd
               url: http://argocd-server.argocd.svc.cluster.local/healthz
               interval: 60s

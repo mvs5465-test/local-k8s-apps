@@ -1,0 +1,27 @@
+replicas: 1
+
+tempo:
+  reportingEnabled: false
+  memBallastSizeMbs: 256
+  retention: 24h
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+
+service:
+  type: ClusterIP
+
+serviceMonitor:
+  enabled: false
+
+persistence:
+  enabled: true
+  enableStatefulSetAutoDeletePVC: true
+  size: 2Gi
+
+tempoQuery:
+  enabled: false

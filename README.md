@@ -24,6 +24,7 @@ See `local-k8s-argocd` README for Colima mount configuration.
 |---|---|---|
 | 🔐 **External Secrets** | Secret operator and CRDs | [external-secrets-app.yaml](apps/wave-1/external-secrets-app.yaml) |
 | 📦 **Mimir** | Long-term Prometheus-compatible metrics backend | [mimir-app.yaml](apps/wave-1/mimir-app.yaml) |
+| 🧭 **Tempo** | Distributed tracing backend | [tempo-app.yaml](apps/wave-1/tempo-app.yaml) |
 | 📊 **Prometheus** | Metrics collection and storage | [prometheus-app.yaml](apps/wave-1/prometheus-app.yaml) |
 | 📈 **Grafana** | Dashboards & visualization | [grafana-app.yaml](apps/wave-1/grafana-app.yaml) |
 | 📝 **Loki** | Log aggregation backend | [loki-app.yaml](apps/wave-1/loki-app.yaml) |
