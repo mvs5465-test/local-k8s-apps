@@ -40,7 +40,7 @@ dashboards:
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+              "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
               "id": 1,
               "options": {
                 "colorMode": "background",
