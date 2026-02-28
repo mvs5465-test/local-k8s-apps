@@ -30,4 +30,6 @@ This repo contains ArgoCD `Application` definitions. Pair it with `local-k8s-arg
 
 ## Git
 - Use Conventional Commits.
+- PR titles must use the same Conventional Commit format as commits: `<type>(<scope>): <description>`.
+- Before handing off a PR, verify the latest commit message and the PR title both match that format.
 - Keep PRs small and scoped to the specific app or deployment concern being changed.
