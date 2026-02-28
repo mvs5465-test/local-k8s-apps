@@ -23,7 +23,7 @@ spec:
                   tag: main
                 env:
                   - name: OLLAMA_BASE_URL
-                    value: "http://ollama-mcp-bridge.ai.svc.cluster.local:8000"
+                    value: "http://ollama.ai.svc.cluster.local:11434"
                   - name: WEBUI_AUTH
                     value: "false"
 
