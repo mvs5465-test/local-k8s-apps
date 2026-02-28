@@ -1,6 +1,6 @@
 # Local K8s Applications
 
-ArgoCD Application definitions for system and user-facing services. Pair with [`local-k8s-argocd`](https://github.com/mvs5465/local-k8s-argocd) infrastructure repo.
+ArgoCD `Application` definitions for system and user-facing services. Pair with [`local-k8s-argocd`](https://github.com/mvs5465/local-k8s-argocd), which reads these manifests via an `ApplicationSet` and generates the live applications.
 
 ## Storage Configuration
 
@@ -37,7 +37,7 @@ See `local-k8s-argocd` README for Colima mount configuration.
 
 1. Create `<app-name>-app.yaml` in `apps/system/` or `apps/services/`
 2. Reference your Helm chart or git repo
-3. Push to main—ArgoCD auto-discovers it
+3. Push to main and let the bootstrap `ApplicationSet` regenerate the live `Application`
 
 ## Development
 
