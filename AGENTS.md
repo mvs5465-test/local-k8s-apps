@@ -22,6 +22,7 @@ This repo contains ArgoCD `Application` definitions. Pair it with `local-k8s-arg
 - `local-k8s-argocd/manifests/argocd/app-of-apps-app.yaml` points ArgoCD at this repo.
 - `local-k8s-argocd/manifests/config/appproject.yaml` controls whether ArgoCD is allowed to sync each app source repo.
 - If you change an app's expected chart path, repo URL, or namespace, verify the matching upstream repo and AppProject policy.
+- If you add, remove, or materially change user-facing services, routes, or cluster workflows, update `cluster-lite-wiki/seed/pages/` in the same PR series so first-boot docs stay current.
 
 ## Validation
 - Check manifest formatting carefully; a bad `Application` spec can break reconciliation.
