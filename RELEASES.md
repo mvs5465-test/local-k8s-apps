@@ -18,6 +18,7 @@
 - k8s-monitoring pod log collection now excludes Loki and Alloy self-logs to avoid recursive ingestion pressure
 - Mimir now disables ingest storage explicitly so it can run without Kafka
 - Grafana and Prometheus chart pins now track the latest published upstream releases
+- k8s-monitoring now exposes OTLP receivers and forwards application traces to Tempo
 
 ### Fixed
 - k8s-monitoring now writes pod logs to the Loki service on port 3100 so log ingestion succeeds again
@@ -27,6 +28,7 @@
 
 ### Added
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
+- Grafana Tempo as a dedicated tracing backend in the monitoring namespace
 
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 
