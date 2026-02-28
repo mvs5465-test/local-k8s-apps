@@ -8,40 +8,111 @@ metadata:
 spec:
   project: cluster
   source:
-    repoURL: https://github.com/mvs5465/cluster-home
-    targetRevision: main
-    path: chart
+    repoURL: https://jameswynn.github.io/helm-charts
+    targetRevision: 2.1.0
+    chart: homepage
     helm:
       releaseName: homepage
       values: |
         image:
-          repository: ghcr.io/mvs5465/cluster-home
-          tag: main
-          pullPolicy: Always
+          repository: ghcr.io/gethomepage/homepage
+          tag: latest
 
-        fullnameOverride: homepage
+        enableRbac: true
 
-        service:
-          type: ClusterIP
-          port: 80
-          targetPort: 8080
+        serviceAccount:
+          create: true
+
+        env:
+          - name: HOMEPAGE_ALLOWED_HOSTS
+            value: "homepage.lan"
 
         resources:
           requests:
-            cpu: 25m
-            memory: 64Mi
-          limits:
-            cpu: 100m
+            cpu: 50m
             memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
 
         ingress:
-          enabled: true
-          className: nginx
-          hosts:
-            - host: home.lan
-              paths:
-                - path: /
-                  pathType: Prefix
+          main:
+            enabled: true
+            ingressClassName: nginx
+            hosts:
+              - host: homepage.lan
+                paths:
+                  - path: /
+                    pathType: Prefix
+
+        config:
+          bookmarks:
+            - GitHub:
+                - local-k8s-argocd:
+                    - abbr: Argo
+                      href: https://github.com/mvs5465/local-k8s-argocd
+                      description: Infrastructure repo
+                - local-k8s-apps:
+                    - abbr: Apps
+                      href: https://github.com/mvs5465/local-k8s-apps
+                      description: Applications repo
+
+          services:
+            - Infrastructure:
+                - ArgoCD:
+                    href: https://argocd.lan
+                    description: GitOps continuous deployment
+                    icon: argo-cd.png
+            - AI:
+                - Chat:
+                    href: http://chat.lan
+                    description: Open WebUI chat interface
+                    icon: chatgpt.png
+            - Monitoring:
+                - Grafana:
+                    href: http://grafana.lan
+                    description: Metrics and log dashboards
+                    icon: grafana.png
+                - Prometheus:
+                    href: http://prometheus.lan
+                    description: Time-series metrics database
+                    icon: prometheus.png
+                - Gatus:
+                    href: http://gatus.lan
+                    description: Service uptime monitoring
+                    icon: gatus.png
+            - Media:
+                - Jellyfin:
+                    href: http://jellyfin.lan
+                    description: Media server and streaming
+                    icon: jellyfin.png
+            - Tools:
+                - Outline:
+                    href: http://outline.lan
+                    description: Collaborative wiki and knowledge base
+                    icon: outline.png
+
+          widgets:
+            - kubernetes:
+                cluster:
+                  show: true
+                  cpu: true
+                  memory: true
+                  showLabel: true
+                  label: "local-k8s"
+                nodes:
+                  show: true
+                  cpu: true
+                  memory: true
+                  showLabel: true
+
+          kubernetes:
+            mode: cluster
+
+          settings:
+            title: Local K8s Cluster
+            theme: dark
+            color: slate
 
   destination:
     server: https://kubernetes.default.svc
