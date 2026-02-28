@@ -167,7 +167,7 @@ dashboards:
                   "color": { "mode": "fixed", "fixedColor": "text" },
                   "mappings": [],
                   "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
-                  "unit": "cores"
+                  "unit": "short"
                 },
                 "overrides": []
               },
@@ -183,12 +183,12 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) or vector(0)",
+                  "expr": "(sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) or vector(0)) * 1000",
                   "instant": true,
                   "refId": "A"
                 }
               ],
-              "title": "CPU Now",
+              "title": "CPU Now (m)",
               "type": "stat"
             },
             {
@@ -307,7 +307,7 @@ dashboards:
                   "color": { "mode": "fixed", "fixedColor": "text" },
                   "mappings": [],
                   "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
-                  "unit": "cores"
+                  "unit": "short"
                 },
                 "overrides": []
               },
@@ -323,12 +323,12 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"})",
+                  "expr": "sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"}) * 1000",
                   "instant": true,
                   "refId": "A"
                 }
               ],
-              "title": "CPU Request",
+              "title": "CPU Request (m)",
               "type": "stat"
             },
             {
