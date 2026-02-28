@@ -18,8 +18,7 @@ See `local-k8s-argocd` README for Colima mount configuration.
 | | | |
 |---|---|---|
 | 📊 **Prometheus** | Metrics collection and storage | [prometheus-app.yaml](apps/system/prometheus-app.yaml) |
-| 📈 **Grafana** | Dashboards & visualization | [grafana-app.yaml](apps/system/grafana-app.yaml) |
-| 📝 **Loki** | Log aggregation backend | [loki-app.yaml](apps/system/loki-app.yaml) |
+| 📈 **Observability** | Grafana, Loki, and Kubernetes telemetry collectors | [observability-app.yaml](apps/system/observability-app.yaml) |
 | 🔍 **Promtail** | Log collection agent | [promtail-app.yaml](apps/system/promtail-app.yaml) |
 | 🔔 **Prometheus Operator** | Kubernetes native monitoring | [prometheus-operator-app.yaml](apps/system/prometheus-operator-app.yaml) |
 | 🌐 **Nginx Ingress** | External traffic routing | [nginx-ingress-app.yaml](apps/system/nginx-ingress-app.yaml) |
