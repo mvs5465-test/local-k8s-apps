@@ -66,3 +66,26 @@ dashboardProviders:
       editable: true
       options:
         path: /var/lib/grafana/dashboards/default
+    - name: 'kubernetes-community'
+      orgId: 1
+      folder: 'Kubernetes Community'
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/kubernetes-community
+
+dashboards:
+  kubernetes-community:
+    k8s-views-global:
+      url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/v3.0.1/dashboards/k8s-views-global.json
+      datasource: Prometheus
+    k8s-views-namespaces:
+      url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/v3.0.1/dashboards/k8s-views-namespaces.json
+      datasource: Prometheus
+    k8s-views-nodes:
+      url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/v3.0.1/dashboards/k8s-views-nodes.json
+      datasource: Prometheus
+    k8s-views-pods:
+      url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/v3.0.1/dashboards/k8s-views-pods.json
+      datasource: Prometheus

@@ -10,6 +10,7 @@
 
 ### Changed
 - Cluster-query-router now connects directly to the in-cluster Ollama service
+- Grafana now provisions the dotdc community Kubernetes dashboards in a dedicated folder
 
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 
