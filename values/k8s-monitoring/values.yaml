@@ -2,6 +2,9 @@ cluster:
   name: local-k3s
 
 destinations:
+  - name: mimir
+    type: prometheus
+    url: http://mimir-gateway.monitoring.svc.cluster.local/api/v1/push
   - name: prometheus
     type: prometheus
     url: http://prometheus-server.monitoring.svc.cluster.local/api/v1/write
@@ -17,6 +20,13 @@ clusterEvents:
 
 podLogs:
   enabled: true
+  extraDiscoveryRules: |
+    rule {
+      source_labels = ["namespace", "pod"]
+      separator = "/"
+      regex = "monitoring/(loki-0|k8s-monitoring-alloy-.*)"
+      action = "drop"
+    }
 
 annotationAutodiscovery:
   enabled: true
@@ -25,6 +35,23 @@ prometheusOperatorObjects:
   enabled: true
   crds:
     deploy: true
+
+integrations:
+  enabled: true
+  loki:
+    instances:
+      - name: loki
+        namespaces:
+          - monitoring
+        logs:
+          enabled: false
+  mimir:
+    instances:
+      - name: mimir
+        namespaces:
+          - monitoring
+        logs:
+          enabled: false
 
 alloy-metrics:
   enabled: true

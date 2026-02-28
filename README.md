@@ -17,6 +17,7 @@ See `local-k8s-argocd` README for Colima mount configuration.
 ### System Services
 | | | |
 |---|---|---|
+| 📦 **Mimir** | Long-term Prometheus-compatible metrics backend | [mimir-app.yaml](apps/system/mimir-app.yaml) |
 | 📊 **Prometheus** | Metrics collection and storage | [prometheus-app.yaml](apps/system/prometheus-app.yaml) |
 | 📈 **Grafana** | Dashboards & visualization | [grafana-app.yaml](apps/system/grafana-app.yaml) |
 | 📝 **Loki** | Log aggregation backend | [loki-app.yaml](apps/system/loki-app.yaml) |
