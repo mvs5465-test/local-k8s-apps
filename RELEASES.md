@@ -10,7 +10,6 @@
 
 ### Changed
 - Cluster-query-router now connects directly to the in-cluster Ollama service
-- Consolidated Grafana, Loki, and k8s-monitoring into a single `observability` ArgoCD application
 
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 

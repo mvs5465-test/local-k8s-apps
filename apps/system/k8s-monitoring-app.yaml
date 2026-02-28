@@ -1,34 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: observability
+  name: k8s-monitoring
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: cluster
   sources:
     - repoURL: https://github.com/mvs5465/local-k8s-apps
       targetRevision: HEAD
       ref: values
-
-    - repoURL: https://grafana.github.io/helm-charts
-      targetRevision: 8.3.0
-      chart: grafana
-      helm:
-        releaseName: grafana
-        valueFiles:
-          - $values/values/grafana/values.yaml
-          - $values/values/grafana/dashboards/cluster-overview.yaml
-          - $values/values/grafana/dashboards/loki-metrics.yaml
-          - $values/values/grafana/dashboards/pod-deep-dive.yaml
-          - $values/values/grafana/dashboards/argocd-overview.yaml
-
-    - repoURL: https://grafana.github.io/helm-charts
-      targetRevision: 6.53.0
-      chart: loki
-      helm:
-        releaseName: loki
-        valueFiles:
-          - $values/values/loki/values.yaml
 
     - repoURL: https://grafana.github.io/helm-charts
       targetRevision: 3.8.1
