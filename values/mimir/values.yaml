@@ -34,6 +34,13 @@ rollout_operator:
 kafka:
   enabled: false
 
+mimir:
+  structuredConfig:
+    ingest_storage:
+      enabled: false
+    ingester:
+      push_grpc_method_enabled: true
+
 minio:
   enabled: true
   persistence:
