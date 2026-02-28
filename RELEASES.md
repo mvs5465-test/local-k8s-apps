@@ -17,10 +17,12 @@
 - k8s-monitoring now remote-writes metrics to both Prometheus and Mimir
 - k8s-monitoring pod log collection now excludes Loki and Alloy self-logs to avoid recursive ingestion pressure
 - Mimir now disables ingest storage explicitly so it can run without Kafka
+- Grafana and Prometheus chart pins now track the latest published upstream releases
 
 ### Fixed
 - k8s-monitoring now writes pod logs to the Loki service on port 3100 so log ingestion succeeds again
 - Mimir now uses single-node replication settings that match the local one-replica topology
+- Mimir gateway now serves a stub `/metrics` response so chart 6.0.5 no longer reports a false down scrape
 
 ### Added
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
