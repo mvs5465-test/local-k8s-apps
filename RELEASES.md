@@ -4,6 +4,7 @@
 
 ### Removed
 - Outline application, host-mounted dependencies, and related dashboard/health-check references
+- Homepage application and its Gatus health check
 
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 
