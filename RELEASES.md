@@ -16,6 +16,7 @@
 - Grafana now provisions official Loki and Mimir dashboards in an Observability Community folder
 - k8s-monitoring now remote-writes metrics to both Prometheus and Mimir
 - k8s-monitoring pod log collection now excludes Loki and Alloy self-logs to avoid recursive ingestion pressure
+- Mimir now disables ingest storage explicitly so it can run without Kafka
 
 ### Added
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
