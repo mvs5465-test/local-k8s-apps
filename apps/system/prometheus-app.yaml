@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: prometheus
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: cluster
   source:
@@ -33,27 +35,34 @@ spec:
               - prometheus.lan
             path: /
             pathType: Prefix
+          extraFlags:
+            - web.enable-lifecycle
+            - web.enable-remote-write-receiver
 
-        pushgateway:
-          enabled: false
+        serverFiles:
+          prometheus.yml:
+            rule_files:
+              - /etc/config/recording_rules.yml
+              - /etc/config/alerting_rules.yml
+              - /etc/config/rules
+              - /etc/config/alerts
+            scrape_configs:
+              - job_name: prometheus
+                static_configs:
+                  - targets:
+                      - localhost:9090
 
         alertmanager:
           enabled: false
 
-        nodeExporter:
-          enabled: true
+        kube-state-metrics:
+          enabled: false
 
-        kubeStateMetrics:
-          enabled: true
+        prometheus-node-exporter:
+          enabled: false
 
-        extraScrapeConfigs: |
-          - job_name: argocd
-            static_configs:
-            - targets:
-              - argocd-application-controller-metrics.argocd.svc.cluster.local:8082
-              - argocd-applicationset-controller-metrics.argocd.svc.cluster.local:8080
-              - argocd-repo-server-metrics.argocd.svc.cluster.local:8084
-              - argocd-server-metrics.argocd.svc.cluster.local:8083
+        prometheus-pushgateway:
+          enabled: false
 
   destination:
     server: https://kubernetes.default.svc
