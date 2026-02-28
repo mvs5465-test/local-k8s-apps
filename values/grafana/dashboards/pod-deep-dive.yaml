@@ -26,62 +26,38 @@ dashboards:
               "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
               "fieldConfig": {
                 "defaults": {
-                  "color": { "mode": "fixed", "fixedColor": "text" },
+                  "color": { "mode": "thresholds" },
                   "mappings": [],
-                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
-                  "unit": "dateTimeAsUs"
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      { "color": "red", "value": null },
+                      { "color": "yellow", "value": 75 },
+                      { "color": "green", "value": 100 }
+                    ]
+                  },
+                  "unit": "percent"
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 4, "w": 3, "x": 0, "y": 0 },
+              "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
               "id": 1,
               "options": {
-                "colorMode": "none",
+                "colorMode": "background",
                 "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value"
+                "textMode": "value_and_name"
               },
               "targets": [
                 {
-                  "expr": "kube_pod_created{namespace=\"$namespace\", pod=\"$pod\"} * 1000",
+                  "expr": "sum(kube_pod_container_status_ready{namespace=\"$namespace\", pod=\"$pod\"}) / clamp_min(count(kube_pod_container_info{namespace=\"$namespace\", pod=\"$pod\"}), 1) * 100",
                   "instant": true,
                   "refId": "A"
                 }
               ],
-              "title": "Created",
-              "type": "stat"
-            },
-            {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-              "fieldConfig": {
-                "defaults": {
-                  "color": { "mode": "fixed", "fixedColor": "text" },
-                  "mappings": [],
-                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
-                  "unit": "s"
-                },
-                "overrides": []
-              },
-              "gridPos": { "h": 4, "w": 3, "x": 3, "y": 0 },
-              "id": 2,
-              "options": {
-                "colorMode": "none",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value"
-              },
-              "targets": [
-                {
-                  "expr": "time() - kube_pod_created{namespace=\"$namespace\", pod=\"$pod\"}",
-                  "instant": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "Age",
+              "title": "Readiness",
               "type": "stat"
             },
             {
@@ -94,15 +70,15 @@ dashboards:
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 4, "w": 3, "x": 6, "y": 0 },
-              "id": 3,
+              "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+              "id": 2,
               "options": {
                 "colorMode": "none",
                 "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "/^phase$/", "values": false },
-                "textMode": "value"
+                "textMode": "value_and_name"
               },
               "targets": [
                 {
@@ -119,37 +95,31 @@ dashboards:
               "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
               "fieldConfig": {
                 "defaults": {
-                  "color": { "mode": "thresholds" },
+                  "color": { "mode": "fixed", "fixedColor": "text" },
                   "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      { "color": "red", "value": null },
-                      { "color": "green", "value": 1 }
-                    ]
-                  },
-                  "unit": "short"
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "s"
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 4, "w": 3, "x": 9, "y": 0 },
-              "id": 4,
+              "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+              "id": 3,
               "options": {
-                "colorMode": "background",
+                "colorMode": "none",
                 "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value"
+                "textMode": "value_and_name"
               },
               "targets": [
                 {
-                  "expr": "sum(kube_pod_container_status_ready{namespace=\"$namespace\", pod=\"$pod\"})",
+                  "expr": "time() - kube_pod_created{namespace=\"$namespace\", pod=\"$pod\"}",
                   "instant": true,
                   "refId": "A"
                 }
               ],
-              "title": "Ready Containers",
+              "title": "Age",
               "type": "stat"
             },
             {
@@ -170,15 +140,15 @@ dashboards:
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 4, "w": 3, "x": 12, "y": 0 },
-              "id": 5,
+              "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+              "id": 4,
               "options": {
                 "colorMode": "background",
                 "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value"
+                "textMode": "value_and_name"
               },
               "targets": [
                 {
@@ -194,76 +164,31 @@ dashboards:
               "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
               "fieldConfig": {
                 "defaults": {
-                  "color": { "mode": "thresholds" },
+                  "color": { "mode": "fixed", "fixedColor": "text" },
                   "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      { "color": "green", "value": null },
-                      { "color": "yellow", "value": 70 },
-                      { "color": "red", "value": 100 }
-                    ]
-                  },
-                  "unit": "percent"
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "cores"
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 4, "w": 3, "x": 15, "y": 0 },
-              "id": 6,
+              "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+              "id": 5,
               "options": {
-                "colorMode": "background",
+                "colorMode": "none",
                 "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value"
+                "textMode": "value_and_name"
               },
               "targets": [
                 {
-                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) / clamp_min(sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"}), 0.001) * 100",
+                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval]))",
                   "instant": true,
                   "refId": "A"
                 }
               ],
-              "title": "CPU vs Request",
-              "type": "stat"
-            },
-            {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-              "fieldConfig": {
-                "defaults": {
-                  "color": { "mode": "thresholds" },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      { "color": "green", "value": null },
-                      { "color": "yellow", "value": 70 },
-                      { "color": "red", "value": 100 }
-                    ]
-                  },
-                  "unit": "percent"
-                },
-                "overrides": []
-              },
-              "gridPos": { "h": 4, "w": 3, "x": 18, "y": 0 },
-              "id": 7,
-              "options": {
-                "colorMode": "background",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value"
-              },
-              "targets": [
-                {
-                  "expr": "sum(container_memory_working_set_bytes{namespace=\"$namespace\", pod=\"$pod\"}) / clamp_min(sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\", unit=\"byte\"}), 1) * 100",
-                  "instant": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "Memory vs Request",
+              "title": "CPU Now",
               "type": "stat"
             },
             {
@@ -277,24 +202,164 @@ dashboards:
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 4, "w": 3, "x": 21, "y": 0 },
-              "id": 8,
+              "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+              "id": 6,
               "options": {
                 "colorMode": "none",
                 "graphMode": "none",
                 "justifyMode": "auto",
                 "orientation": "auto",
                 "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "textMode": "value"
+                "textMode": "value_and_name"
               },
               "targets": [
                 {
-                  "expr": "sum(kube_pod_container_resource_limits{namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\", unit=\"byte\"})",
+                  "expr": "sum(container_memory_working_set_bytes{namespace=\"$namespace\", pod=\"$pod\"})",
                   "instant": true,
                   "refId": "A"
                 }
               ],
-              "title": "Memory Limit",
+              "title": "Memory Now",
+              "type": "stat"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "thresholds" },
+                  "mappings": [],
+                  "min": 0,
+                  "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      { "color": "green", "value": null },
+                      { "color": "yellow", "value": 70 },
+                      { "color": "red", "value": 100 }
+                    ]
+                  },
+                  "unit": "percent"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 7, "w": 6, "x": 0, "y": 4 },
+              "id": 7,
+              "options": {
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "text": {}
+              },
+              "targets": [
+                {
+                  "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) / clamp_min(sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"}), 0.001) * 100",
+                  "instant": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "CPU Budget Used",
+              "type": "gauge"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "thresholds" },
+                  "mappings": [],
+                  "min": 0,
+                  "max": 100,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      { "color": "green", "value": null },
+                      { "color": "yellow", "value": 70 },
+                      { "color": "red", "value": 100 }
+                    ]
+                  },
+                  "unit": "percent"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 7, "w": 6, "x": 6, "y": 4 },
+              "id": 8,
+              "options": {
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "text": {}
+              },
+              "targets": [
+                {
+                  "expr": "sum(container_memory_working_set_bytes{namespace=\"$namespace\", pod=\"$pod\"}) / clamp_min(sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\", unit=\"byte\"}), 1) * 100",
+                  "instant": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Memory Budget Used",
+              "type": "gauge"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "fixed", "fixedColor": "text" },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "cores"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 7, "w": 6, "x": 12, "y": 4 },
+              "id": 9,
+              "options": {
+                "colorMode": "none",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "textMode": "value_and_name"
+              },
+              "targets": [
+                {
+                  "expr": "sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"})",
+                  "instant": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "CPU Request",
+              "type": "stat"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "fixed", "fixedColor": "text" },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "bytes"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 7, "w": 6, "x": 18, "y": 4 },
+              "id": 10,
+              "options": {
+                "colorMode": "none",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "textMode": "value_and_name"
+              },
+              "targets": [
+                {
+                  "expr": "sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\", unit=\"byte\"})",
+                  "instant": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Memory Request",
               "type": "stat"
             },
             {
@@ -323,21 +388,21 @@ dashboards:
                   },
                   "mappings": [],
                   "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
-                  "unit": "short"
+                  "unit": "cores"
                 },
                 "overrides": [
                   {
-                    "matcher": { "id": "byName", "options": "CPU request" },
+                    "matcher": { "id": "byName", "options": "Request" },
                     "properties": [{ "id": "color", "value": { "fixedColor": "#f59e0b", "mode": "fixed" } }]
                   },
                   {
-                    "matcher": { "id": "byName", "options": "CPU limit" },
+                    "matcher": { "id": "byName", "options": "Limit" },
                     "properties": [{ "id": "color", "value": { "fixedColor": "#ef4444", "mode": "fixed" } }]
                   }
                 ]
               },
-              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
-              "id": 9,
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 11 },
+              "id": 11,
               "options": {
                 "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
                 "tooltip": { "mode": "multi", "sort": "none" }
@@ -345,21 +410,21 @@ dashboards:
               "targets": [
                 {
                   "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval]))",
-                  "legendFormat": "CPU usage",
+                  "legendFormat": "Usage",
                   "refId": "A"
                 },
                 {
                   "expr": "sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"})",
-                  "legendFormat": "CPU request",
+                  "legendFormat": "Request",
                   "refId": "B"
                 },
                 {
                   "expr": "sum(kube_pod_container_resource_limits{namespace=\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"})",
-                  "legendFormat": "CPU limit",
+                  "legendFormat": "Limit",
                   "refId": "C"
                 }
               ],
-              "title": "CPU Usage vs Request/Limit",
+              "title": "CPU Trend",
               "type": "timeseries"
             },
             {
@@ -392,17 +457,17 @@ dashboards:
                 },
                 "overrides": [
                   {
-                    "matcher": { "id": "byName", "options": "Memory request" },
+                    "matcher": { "id": "byName", "options": "Request" },
                     "properties": [{ "id": "color", "value": { "fixedColor": "#f59e0b", "mode": "fixed" } }]
                   },
                   {
-                    "matcher": { "id": "byName", "options": "Memory limit" },
+                    "matcher": { "id": "byName", "options": "Limit" },
                     "properties": [{ "id": "color", "value": { "fixedColor": "#ef4444", "mode": "fixed" } }]
                   }
                 ]
               },
-              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
-              "id": 10,
+              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 11 },
+              "id": 12,
               "options": {
                 "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
                 "tooltip": { "mode": "multi", "sort": "none" }
@@ -410,21 +475,21 @@ dashboards:
               "targets": [
                 {
                   "expr": "sum(container_memory_working_set_bytes{namespace=\"$namespace\", pod=\"$pod\"})",
-                  "legendFormat": "Memory usage",
+                  "legendFormat": "Usage",
                   "refId": "A"
                 },
                 {
                   "expr": "sum(kube_pod_container_resource_requests{namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\", unit=\"byte\"})",
-                  "legendFormat": "Memory request",
+                  "legendFormat": "Request",
                   "refId": "B"
                 },
                 {
                   "expr": "sum(kube_pod_container_resource_limits{namespace=\"$namespace\", pod=\"$pod\", resource=\"memory\", unit=\"byte\"})",
-                  "legendFormat": "Memory limit",
+                  "legendFormat": "Limit",
                   "refId": "C"
                 }
               ],
-              "title": "Memory Usage vs Request/Limit",
+              "title": "Memory Trend",
               "type": "timeseries"
             },
             {
@@ -457,8 +522,8 @@ dashboards:
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
-              "id": 11,
+              "gridPos": { "h": 8, "w": 8, "x": 0, "y": 19 },
+              "id": 13,
               "options": {
                 "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
                 "tooltip": { "mode": "multi", "sort": "none" }
@@ -508,8 +573,8 @@ dashboards:
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
-              "id": 12,
+              "gridPos": { "h": 8, "w": 8, "x": 8, "y": 19 },
+              "id": 14,
               "options": {
                 "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
                 "tooltip": { "mode": "multi", "sort": "none" }
@@ -525,9 +590,40 @@ dashboards:
               "type": "timeseries"
             },
             {
+              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "fixed", "fixedColor": "text" },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 8, "w": 8, "x": 16, "y": 19 },
+              "id": 15,
+              "options": {
+                "colorMode": "none",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "textMode": "value_and_name"
+              },
+              "targets": [
+                {
+                  "expr": "count(kube_pod_container_info{namespace=\"$namespace\", pod=\"$pod\"})",
+                  "instant": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Containers",
+              "type": "stat"
+            },
+            {
               "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
-              "gridPos": { "h": 10, "w": 24, "x": 0, "y": 20 },
-              "id": 13,
+              "gridPos": { "h": 10, "w": 24, "x": 0, "y": 27 },
+              "id": 16,
               "options": {
                 "dedupStrategy": "none",
                 "enableLogDetails": true,
@@ -552,7 +648,7 @@ dashboards:
           "refresh": "30s",
           "schemaVersion": 38,
           "style": "dark",
-          "tags": ["pod", "metrics", "resources"],
+          "tags": ["pod", "deep-dive", "ops"],
           "templating": {
             "list": [
               {
@@ -599,5 +695,5 @@ dashboards:
           "title": "Pod Deep Dive",
           "uid": "pod-deep-dive",
           "starred": true,
-          "version": 2
+          "version": 3
         }
