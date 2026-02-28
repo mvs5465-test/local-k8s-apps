@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-lite-wiki
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cluster
+  source:
+    repoURL: https://github.com/mvs5465/cluster-lite-wiki
+    targetRevision: main
+    path: chart
+    helm:
+      releaseName: cluster-lite-wiki
+      values: |
+        replicaCount: 1
+        image:
+          repository: ghcr.io/mvs5465/cluster-lite-wiki
+          tag: main
+          pullPolicy: Always
+        service:
+          type: ClusterIP
+          port: 8080
+        ingress:
+          enabled: true
+          className: nginx
+          hosts:
+            - host: wiki.lan
+              paths:
+                - path: /
+                  pathType: Prefix
+        env:
+          WIKI_SITE_NAME: "Cluster Lite Wiki"
+        persistence:
+          enabled: true
+          hostPath: /Users/matthewschwartz/clusterstorage/wiki/data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: services
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
