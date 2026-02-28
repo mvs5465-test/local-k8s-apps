@@ -9,6 +9,7 @@
 - Chat application and its homepage/status references
 
 ### Changed
+- App manifests are now grouped by ArgoCD sync wave (`apps/wave-0`, `apps/wave-1`, `apps/wave-2`) instead of `apps/system` and `apps/services`
 - Cluster-query-router now connects directly to the in-cluster Ollama service
 - Grafana now provisions the dotdc community Kubernetes dashboards in a dedicated folder
 - Gatus health checks now cover cluster-home, cluster-lite-wiki, and cluster-query-router, and remove the stale Ollama check
@@ -111,7 +112,7 @@
 - Loki matcher patterns: use `.+` instead of `.*` to avoid "empty-compatible" matcher rejection in Loki 3.x
 
 ### Dashboards Details
-All dashboard JSON stored in `apps/system/grafana-app.yaml` under `dashboards.default`:
+All dashboard JSON stored in `apps/wave-1/grafana-app.yaml` under `dashboards.default`:
 - **cluster-overview** — custom inline JSON
 - **loki-logs** — custom inline JSON
 
