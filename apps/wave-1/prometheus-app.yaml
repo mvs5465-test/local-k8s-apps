@@ -44,11 +44,6 @@ spec:
               - /etc/config/alerting_rules.yml
               - /etc/config/rules
               - /etc/config/alerts
-            scrape_configs:
-              - job_name: prometheus
-                static_configs:
-                  - targets:
-                      - localhost:9090
 
         alertmanager:
           enabled: false
