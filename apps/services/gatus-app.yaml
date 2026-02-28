@@ -92,12 +92,6 @@ spec:
               conditions:
                 - "[STATUS] == 200"
 
-            - name: outline
-              url: http://outline-main.outline.svc.cluster.local:3000
-              interval: 60s
-              conditions:
-                - "[STATUS] == 200"
-
             - name: chat
               url: http://chat.ai.svc.cluster.local:8080/health
               interval: 60s

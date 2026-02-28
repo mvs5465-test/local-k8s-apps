@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Removed
+- Outline application, host-mounted dependencies, and related dashboard/health-check references
+
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 
 ### Added
