@@ -4,12 +4,14 @@ This repo contains ArgoCD `Application` definitions. Pair it with `local-k8s-arg
 
 ## Repo Shape
 - Child applications live in:
-  - `apps/system/`
-  - `apps/services/`
+  - `apps/wave-0/`
+  - `apps/wave-1/`
+  - `apps/wave-2/`
 - Shared values files live under `values/`
 
 ## Working Rules
-- Add new apps as `<name>-app.yaml` in `apps/system/` or `apps/services/`.
+- Add new apps as `<name>-app.yaml` in `apps/wave-0/`, `apps/wave-1/`, or `apps/wave-2/` based on the intended ArgoCD sync order.
+- The `ApplicationSet` assigns `argocd.argoproj.io/sync-wave` based on the folder, so app manifests should not set that annotation themselves.
 - Keep this repo focused on ArgoCD application manifests and shared values, not app source code.
 - Prefer minimal Helm overrides here; if a chart can own a sensible default, keep the override out of this repo.
 - If an app pulls its chart from a git repo, add that repo URL to `local-k8s-argocd/manifests/config/appproject.yaml` `sourceRepos`.
