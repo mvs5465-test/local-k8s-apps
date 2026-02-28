@@ -14,6 +14,7 @@
 - Grafana now provisions the dotdc community Kubernetes dashboards in a dedicated folder
 - Gatus health checks now cover cluster-home, cluster-lite-wiki, and cluster-query-router, and remove the stale Ollama check
 - Grafana now provisions official Loki and Mimir dashboards in an Observability Community folder
+- Grafana now provisions the official Tempo Writes dashboard in the Observability Community folder
 - k8s-monitoring now remote-writes metrics to both Prometheus and Mimir
 - k8s-monitoring pod log collection now excludes Loki and Alloy self-logs to avoid recursive ingestion pressure
 - Mimir now disables ingest storage explicitly so it can run without Kafka
