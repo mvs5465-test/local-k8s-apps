@@ -18,6 +18,10 @@
 - k8s-monitoring pod log collection now excludes Loki and Alloy self-logs to avoid recursive ingestion pressure
 - Mimir now disables ingest storage explicitly so it can run without Kafka
 
+### Fixed
+- k8s-monitoring now writes pod logs to the Loki service on port 3100 so log ingestion succeeds again
+- Mimir now uses single-node replication settings that match the local one-replica topology
+
 ### Added
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
 
