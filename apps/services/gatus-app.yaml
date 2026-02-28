@@ -68,8 +68,8 @@ spec:
               conditions:
                 - "[STATUS] == 200"
 
-            - name: homepage
-              url: http://homepage.services.svc.cluster.local:3000
+            - name: home
+              url: http://homepage.services.svc.cluster.local
               interval: 60s
               conditions:
                 - "[STATUS] == 200"
