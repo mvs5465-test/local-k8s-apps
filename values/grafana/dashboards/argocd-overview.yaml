@@ -93,24 +93,24 @@ dashboards:
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "palette-classic" },
-                  "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "bars", "fillOpacity": 100, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": true, "stacking": { "group": "A", "mode": "normal" }, "thresholdsStyle": { "mode": "off" } },
+                  "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "linear", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "auto", "spanNulls": true, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
                   "mappings": [],
                   "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
                   "unit": "short"
                 },
                 "overrides": [
-                  { "matcher": { "id": "byName", "options": "succeeded" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] },
-                  { "matcher": { "id": "byName", "options": "failed" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] }
+                  { "matcher": { "id": "byName", "options": "Synced" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] },
+                  { "matcher": { "id": "byName", "options": "OutOfSync" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] }
                 ]
               },
               "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
               "id": 5,
               "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
               "targets": [
-                { "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "sum(increase(argocd_app_sync_total{phase=\"Succeeded\"}[5m])) by (project)", "legendFormat": "succeeded", "refId": "A" },
-                { "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "sum(increase(argocd_app_sync_total{phase=\"Failed\"}[5m])) by (project)", "legendFormat": "failed", "refId": "B" }
+                { "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "count(argocd_app_info{sync_status=\"Synced\"})", "legendFormat": "Synced", "refId": "A" },
+                { "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)", "legendFormat": "OutOfSync", "refId": "B" }
               ],
-              "title": "App Syncs (5m)",
+              "title": "App Status",
               "type": "timeseries"
             },
             {
