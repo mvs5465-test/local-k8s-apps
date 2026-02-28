@@ -276,84 +276,6 @@ dashboards:
               "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
               "fieldConfig": {
                 "defaults": {
-                  "color": { "mode": "thresholds" },
-                  "mappings": [],
-                  "min": 0,
-                  "max": 100,
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      { "color": "green", "value": null },
-                      { "color": "yellow", "value": 70 },
-                      { "color": "red", "value": 100 }
-                    ]
-                  },
-                  "unit": "percent"
-                },
-                "overrides": []
-              },
-              "gridPos": { "h": 7, "w": 6, "x": 0, "y": 4 },
-              "id": 7,
-              "options": {
-                "orientation": "auto",
-                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "showThresholdLabels": false,
-                "showThresholdMarkers": true,
-                "text": {}
-              },
-              "targets": [
-                {
-                  "expr": "(sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\", pod=\"$pod\", cpu=\"total\"}[$__rate_interval])) / clamp_min(sum(kube_pod_container_resource_requests{namespace=~\"$namespace\", pod=\"$pod\", resource=\"cpu\", unit=\"core\"}), 0.001) * 100) or vector(0)",
-                  "instant": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "CPU Budget Used",
-              "type": "gauge"
-            },
-            {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-              "fieldConfig": {
-                "defaults": {
-                  "color": { "mode": "thresholds" },
-                  "mappings": [],
-                  "min": 0,
-                  "max": 100,
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      { "color": "green", "value": null },
-                      { "color": "yellow", "value": 70 },
-                      { "color": "red", "value": 100 }
-                    ]
-                  },
-                  "unit": "percent"
-                },
-                "overrides": []
-              },
-              "gridPos": { "h": 7, "w": 6, "x": 6, "y": 4 },
-              "id": 8,
-              "options": {
-                "orientation": "auto",
-                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-                "showThresholdLabels": false,
-                "showThresholdMarkers": true,
-                "text": {}
-              },
-              "targets": [
-                {
-                  "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\", pod=\"$pod\"}) / clamp_min(sum(kube_pod_container_resource_requests{namespace=~\"$namespace\", pod=\"$pod\", resource=\"memory\", unit=\"byte\"}), 1) * 100",
-                  "instant": true,
-                  "refId": "A"
-                }
-              ],
-              "title": "Memory Budget Used",
-              "type": "gauge"
-            },
-            {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
-              "fieldConfig": {
-                "defaults": {
                   "color": { "mode": "palette-classic" },
                   "custom": {
                     "axisCenteredZero": false,
@@ -389,7 +311,7 @@ dashboards:
                   }
                 ]
               },
-              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 11 },
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
               "id": 11,
               "options": {
                 "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
@@ -454,7 +376,7 @@ dashboards:
                   }
                 ]
               },
-              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 11 },
+              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 },
               "id": 12,
               "options": {
                 "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
@@ -510,7 +432,7 @@ dashboards:
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 8, "w": 8, "x": 0, "y": 19 },
+              "gridPos": { "h": 8, "w": 8, "x": 0, "y": 13 },
               "id": 13,
               "options": {
                 "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
@@ -533,7 +455,7 @@ dashboards:
             },
             {
               "datasource": { "type": "loki", "uid": "P8E80F9AEF21F6940" },
-              "gridPos": { "h": 8, "w": 16, "x": 8, "y": 19 },
+              "gridPos": { "h": 8, "w": 16, "x": 8, "y": 13 },
               "id": 16,
               "options": {
                 "dedupStrategy": "none",
@@ -564,7 +486,7 @@ dashboards:
             "list": [
               {
                 "allValue": ".*",
-                "current": { "selected": false, "text": "services", "value": "services" },
+                "current": { "selected": true, "text": "All", "value": "$__all" },
                 "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
                 "definition": "label_values(kube_pod_info, namespace)",
                 "hide": 0,
