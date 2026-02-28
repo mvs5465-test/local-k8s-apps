@@ -28,6 +28,18 @@ store_gateway:
   persistentVolume:
     size: 2Gi
 
+gateway:
+  nginx:
+    config:
+      # Chart 6.0.5 still scrapes the nginx gateway on /metrics even though it does not expose native Prometheus metrics.
+      # Serve an empty 200 response so the target is healthy until the upstream chart fix is available in a released version.
+      serverSnippet: |
+        location = /metrics {
+          default_type text/plain;
+          auth_basic off;
+          return 200 "";
+        }
+
 rollout_operator:
   enabled: false
 
