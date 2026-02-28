@@ -5,6 +5,11 @@
 ### Removed
 - Outline application, host-mounted dependencies, and related dashboard/health-check references
 - Homepage application and its Gatus health check
+- Ollama MCP bridge application, external Ollama proxy app, and supporting manifests
+- Chat application and its homepage/status references
+
+### Changed
+- Cluster-query-router now connects directly to the in-cluster Ollama service
 
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 

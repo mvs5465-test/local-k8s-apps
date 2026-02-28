@@ -86,12 +86,6 @@ spec:
               conditions:
                 - "[STATUS] == 200"
 
-            - name: chat
-              url: http://chat.ai.svc.cluster.local:8080/health
-              interval: 60s
-              conditions:
-                - "[STATUS] == 200"
-
             - name: ollama
               url: http://ollama.ai.svc.cluster.local:11434
               interval: 60s

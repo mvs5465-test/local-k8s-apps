@@ -62,12 +62,6 @@ spec:
                   "name": "Apps",
                   "items": [
                     {
-                      "name": "Chat",
-                      "icon": "CH",
-                      "url": "http://chat.lan",
-                      "description": "Open WebUI for local model chat."
-                    },
-                    {
                       "name": "Jellyfin",
                       "icon": "JF",
                       "url": "http://jellyfin.lan",
