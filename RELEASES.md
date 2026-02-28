@@ -22,6 +22,7 @@
 ### Fixed
 - k8s-monitoring now writes pod logs to the Loki service on port 3100 so log ingestion succeeds again
 - Mimir now uses single-node replication settings that match the local one-replica topology
+- Prometheus no longer defines a duplicate self-scrape job after the chart upgrade, which fixes the server crash loop
 - Mimir gateway now serves a stub `/metrics` response so chart 6.0.5 no longer reports a false down scrape
 
 ### Added
