@@ -36,6 +36,18 @@ spec:
             ports:
               http:
                 port: 8080
+        ingress:
+          main:
+            enabled: true
+            className: nginx
+            hosts:
+              - host: prometheus-mcp.lan
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    service:
+                      identifier: main
+                      port: http
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

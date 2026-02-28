@@ -22,6 +22,14 @@ spec:
         service:
           type: ClusterIP
           port: 8000
+        ingress:
+          enabled: true
+          className: nginx
+          hosts:
+            - host: loki-mcp.lan
+              paths:
+                - path: /
+                  pathType: Prefix
         env:
           LOKI_URL: "http://loki.monitoring.svc.cluster.local:3100"
         resources:
