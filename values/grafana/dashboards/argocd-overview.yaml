@@ -23,7 +23,7 @@ dashboards:
           "links": [],
           "panels": [
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "mappings": [
@@ -36,12 +36,12 @@ dashboards:
               "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
               "id": 1,
               "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-              "targets": [{ "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "argocd_info", "legendFormat": "ArgoCD", "refId": "A" }],
+              "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "argocd_info", "legendFormat": "ArgoCD", "refId": "A" }],
               "title": "ArgoCD Status",
               "type": "stat"
             },
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "thresholds" },
@@ -52,12 +52,12 @@ dashboards:
               "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
               "id": 2,
               "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-              "targets": [{ "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "count(argocd_app_info{sync_status=\"Synced\"})", "legendFormat": "Synced", "refId": "A" }],
+              "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(argocd_app_info{sync_status=\"Synced\"})", "legendFormat": "Synced", "refId": "A" }],
               "title": "Apps Synced",
               "type": "stat"
             },
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "thresholds" },
@@ -68,12 +68,12 @@ dashboards:
               "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
               "id": 3,
               "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-              "targets": [{ "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)", "legendFormat": "OutOfSync", "refId": "A" }],
+              "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)", "legendFormat": "OutOfSync", "refId": "A" }],
               "title": "Apps Out of Sync",
               "type": "stat"
             },
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "thresholds" },
@@ -84,12 +84,12 @@ dashboards:
               "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
               "id": 4,
               "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-              "targets": [{ "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "count(argocd_app_info{health_status!=\"Healthy\"}) or vector(0)", "legendFormat": "Unhealthy", "refId": "A" }],
+              "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(argocd_app_info{health_status!=\"Healthy\"}) or vector(0)", "legendFormat": "Unhealthy", "refId": "A" }],
               "title": "Apps Unhealthy",
               "type": "stat"
             },
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "palette-classic" },
@@ -107,14 +107,14 @@ dashboards:
               "id": 5,
               "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
               "targets": [
-                { "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "count(argocd_app_info{sync_status=\"Synced\"})", "legendFormat": "Synced", "refId": "A" },
-                { "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)", "legendFormat": "OutOfSync", "refId": "B" }
+                { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(argocd_app_info{sync_status=\"Synced\"})", "legendFormat": "Synced", "refId": "A" },
+                { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)", "legendFormat": "OutOfSync", "refId": "B" }
               ],
               "title": "App Status",
               "type": "timeseries"
             },
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "palette-classic" },
@@ -128,12 +128,12 @@ dashboards:
               "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
               "id": 6,
               "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
-              "targets": [{ "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "histogram_quantile(0.95, sum(rate(argocd_app_reconcile_bucket[5m])) by (le, namespace))", "legendFormat": "p95 {{namespace}}", "refId": "A" }],
+              "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.95, sum(rate(argocd_app_reconcile_bucket[5m])) by (le, namespace))", "legendFormat": "p95 {{namespace}}", "refId": "A" }],
               "title": "App Reconcile Duration p95",
               "type": "timeseries"
             },
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "palette-classic" },
@@ -147,12 +147,12 @@ dashboards:
               "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
               "id": 7,
               "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
-              "targets": [{ "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "sum(increase(argocd_git_request_total[5m])) by (request_type)", "legendFormat": "{{request_type}}", "refId": "A" }],
+              "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(increase(argocd_git_request_total[5m])) by (request_type)", "legendFormat": "{{request_type}}", "refId": "A" }],
               "title": "Git Requests (5m)",
               "type": "timeseries"
             },
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "palette-classic" },
@@ -166,12 +166,12 @@ dashboards:
               "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
               "id": 8,
               "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
-              "targets": [{ "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "histogram_quantile(0.95, sum(rate(argocd_git_request_duration_seconds_bucket[5m])) by (le, request_type))", "legendFormat": "p95 {{request_type}}", "refId": "A" }],
+              "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.95, sum(rate(argocd_git_request_duration_seconds_bucket[5m])) by (le, request_type))", "legendFormat": "p95 {{request_type}}", "refId": "A" }],
               "title": "Git Request Duration p95",
               "type": "timeseries"
             },
             {
-              "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
               "fieldConfig": {
                 "defaults": {
                   "color": { "mode": "palette-classic" },
@@ -185,7 +185,7 @@ dashboards:
               "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
               "id": 9,
               "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
-              "targets": [{ "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" }, "expr": "sum(increase(argocd_redis_request_total[5m])) by (initiator)", "legendFormat": "{{initiator}}", "refId": "A" }],
+              "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(increase(argocd_redis_request_total[5m])) by (initiator)", "legendFormat": "{{initiator}}", "refId": "A" }],
               "title": "Redis Requests by Initiator (5m)",
               "type": "timeseries"
             }
