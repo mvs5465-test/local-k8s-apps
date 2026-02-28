@@ -18,7 +18,7 @@ spec:
         image:
           repository: ghcr.io/mvs5465/loki-mcp-server
           tag: main
-          pullPolicy: IfNotPresent
+          pullPolicy: Always
         service:
           type: ClusterIP
           port: 8000
