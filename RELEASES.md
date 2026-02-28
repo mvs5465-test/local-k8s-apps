@@ -11,6 +11,7 @@
 ### Changed
 - Cluster-query-router now connects directly to the in-cluster Ollama service
 - Grafana now provisions the dotdc community Kubernetes dashboards in a dedicated folder
+- Gatus health checks now cover cluster-home, cluster-lite-wiki, and cluster-query-router, and remove the stale Ollama check
 
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 

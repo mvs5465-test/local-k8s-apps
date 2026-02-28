@@ -51,7 +51,7 @@ spec:
 
           endpoints:
             - name: prometheus
-              url: http://prometheus-server.monitoring.svc.cluster.local
+              url: http://prometheus-server.monitoring.svc.cluster.local/-/healthy
               interval: 60s
               conditions:
                 - "[STATUS] == 200"
@@ -86,8 +86,21 @@ spec:
               conditions:
                 - "[STATUS] == 200"
 
-            - name: ollama
-              url: http://ollama.ai.svc.cluster.local:11434
+            - name: cluster-home
+              url: http://cluster-home.services.svc.cluster.local/
+              interval: 60s
+              conditions:
+                - "[STATUS] == 200"
+
+            - name: cluster-lite-wiki
+              url: http://cluster-lite-wiki.services.svc.cluster.local:8080/
+              interval: 60s
+              conditions:
+                - "[STATUS] >= 200"
+                - "[STATUS] < 400"
+
+            - name: cluster-query-router
+              url: http://cluster-query-router.ai.svc.cluster.local:8080/
               interval: 60s
               conditions:
                 - "[STATUS] == 200"
