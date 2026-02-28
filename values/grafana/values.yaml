@@ -112,3 +112,5 @@ dashboards:
       url: https://raw.githubusercontent.com/grafana/loki/v3.6.5/production/loki-mixin-compiled/dashboards/loki-operational.json
     mimir-overview:
       url: https://raw.githubusercontent.com/grafana/mimir/mimir-3.0.1/operations/mimir-mixin-compiled/dashboards/mimir-overview.json
+    tempo-writes:
+      url: https://raw.githubusercontent.com/grafana/tempo/v2.10.1/operations/tempo-mixin-compiled/dashboards/tempo-writes.json
