@@ -32,6 +32,8 @@ spec:
                   pathType: Prefix
         env:
           LOKI_URL: "http://loki.monitoring.svc.cluster.local:3100"
+        otel:
+          endpoint: "http://k8s-monitoring-alloy-receiver.monitoring.svc.cluster.local:4317"
         resources:
           requests:
             memory: "64Mi"
