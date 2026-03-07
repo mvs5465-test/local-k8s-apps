@@ -39,6 +39,8 @@ podLogs:
 applicationObservability:
   enabled: true
   destinations:
+    - mimir
+    - loki
     - tempo
   receivers:
     otlp:
@@ -46,10 +48,6 @@ applicationObservability:
         enabled: true
       http:
         enabled: true
-  metrics:
-    enabled: false
-  logs:
-    enabled: false
 
 annotationAutodiscovery:
   enabled: true
