@@ -20,6 +20,7 @@
 - Mimir now disables ingest storage explicitly so it can run without Kafka
 - Grafana and Prometheus chart pins now track the latest published upstream releases
 - k8s-monitoring now exposes OTLP receivers and forwards application traces to Tempo
+- github-pr-slack-notifier now deploys to its own namespace (`github-pr-slack-notifier`) with matching ESO secret fan-out
 
 ### Fixed
 - k8s-monitoring now writes pod logs to the Loki service on port 3100 so log ingestion succeeds again
