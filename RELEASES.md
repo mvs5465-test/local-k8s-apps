@@ -30,6 +30,8 @@
 ### Added
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
 - Grafana Tempo as a dedicated tracing backend in the monitoring namespace
+- GitHub PR Slack notifier ArgoCD application (`apps/wave-2/github-pr-slack-notifier-app.yaml`)
+- External Secrets fan-out manifest for notifier runtime credentials (`manifests/external-secrets/github-pr-slack-notifier-secret.yaml`)
 
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 
