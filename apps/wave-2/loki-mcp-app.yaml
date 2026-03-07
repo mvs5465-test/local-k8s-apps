@@ -8,7 +8,7 @@ metadata:
 spec:
   project: cluster
   source:
-    repoURL: https://github.com/mvs5465/loki-mcp-server
+    repoURL: https://github.com/mvs5465-test/loki-mcp-server
     targetRevision: main
     path: chart
     helm:
@@ -16,7 +16,7 @@ spec:
       values: |
         replicaCount: 1
         image:
-          repository: ghcr.io/mvs5465/loki-mcp-server
+          repository: ghcr.io/mvs5465-test/loki-mcp-server
           tag: main
           pullPolicy: Always
         service:

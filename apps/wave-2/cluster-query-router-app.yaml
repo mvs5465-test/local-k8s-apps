@@ -8,7 +8,7 @@ metadata:
 spec:
   project: cluster
   source:
-    repoURL: https://github.com/mvs5465/cluster-query-router
+    repoURL: https://github.com/mvs5465-test/cluster-query-router
     targetRevision: main
     path: chart
     helm:

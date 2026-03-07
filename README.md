@@ -1,6 +1,6 @@
 # Local K8s Applications
 
-ArgoCD `Application` definitions grouped by sync wave. Pair with [`local-k8s-argocd`](https://github.com/mvs5465/local-k8s-argocd), which reads these manifests via an `ApplicationSet` and generates the live applications.
+ArgoCD `Application` definitions grouped by sync wave. Pair with [`local-k8s-argocd`](https://github.com/mvs5465-test/local-k8s-argocd), which reads these manifests via an `ApplicationSet` and generates the live applications.
 
 ## Storage Configuration
 

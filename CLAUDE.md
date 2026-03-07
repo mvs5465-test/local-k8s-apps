@@ -17,7 +17,7 @@ This repo contains ArgoCD Application definitions. Pair with `local-k8s-argocd` 
 3. If the app sources its Helm chart from a **git repository** (not a public Helm repo), you must whitelist that repo URL in `local-k8s-argocd/manifests/config/appproject.yaml` under `sourceRepos`
 4. Push to main → ArgoCD auto-discovers
 
-**Example:** loki-mcp-server pulls its Helm chart from `https://github.com/mvs5465/loki-mcp-server`, so that URL was added to sourceRepos.
+**Example:** loki-mcp-server pulls its Helm chart from `https://github.com/mvs5465-test/loki-mcp-server`, so that URL was added to sourceRepos.
 
 ### Test application changes
 1. Create feature branch
