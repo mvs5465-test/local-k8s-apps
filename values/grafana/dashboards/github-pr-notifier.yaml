@@ -1,0 +1,421 @@
+dashboards:
+  default:
+    github-pr-notifier:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": null,
+          "links": [],
+          "panels": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "thresholds" },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      { "color": "green", "value": null },
+                      { "color": "yellow", "value": 5 },
+                      { "color": "red", "value": 10 }
+                    ]
+                  },
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+              "id": 1,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "histogram_quantile(0.95, sum(rate(pr_notifier_reconcile_cycle_duration_seconds_bucket[5m])) by (le))",
+                  "legendFormat": "p95",
+                  "refId": "A"
+                }
+              ],
+              "title": "Reconcile Cycle p95",
+              "type": "stat"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "thresholds" },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      { "color": "green", "value": null },
+                      { "color": "yellow", "value": 1 },
+                      { "color": "red", "value": 5 }
+                    ]
+                  },
+                  "unit": "ops"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+              "id": 2,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(rate(pr_notifier_reconcile_pr_processed_total[5m]))",
+                  "legendFormat": "prs/sec",
+                  "refId": "A"
+                }
+              ],
+              "title": "PRs Processed Rate",
+              "type": "stat"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "thresholds" },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      { "color": "green", "value": null },
+                      { "color": "yellow", "value": 1 },
+                      { "color": "red", "value": 10 }
+                    ]
+                  },
+                  "unit": "ops"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+              "id": 3,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(rate(pr_notifier_external_api_requests_total{system=\"github\"}[5m]))",
+                  "legendFormat": "github req/s",
+                  "refId": "A"
+                }
+              ],
+              "title": "GitHub API Rate",
+              "type": "stat"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "thresholds" },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      { "color": "green", "value": null },
+                      { "color": "yellow", "value": 1 },
+                      { "color": "red", "value": 10 }
+                    ]
+                  },
+                  "unit": "ops"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+              "id": 4,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(increase(pr_notifier_reconcile_errors_total[15m]))",
+                  "legendFormat": "errors/15m",
+                  "refId": "A"
+                }
+              ],
+              "title": "Reconcile Errors (15m)",
+              "type": "stat"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "palette-classic" },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": { "type": "linear" },
+                    "showPoints": "auto",
+                    "spanNulls": true,
+                    "stacking": { "group": "A", "mode": "none" },
+                    "thresholdsStyle": { "mode": "off" }
+                  },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+              "id": 5,
+              "options": {
+                "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
+                "tooltip": { "mode": "multi", "sort": "none" }
+              },
+              "targets": [
+                {
+                  "expr": "histogram_quantile(0.5, sum(rate(pr_notifier_reconcile_cycle_duration_seconds_bucket[5m])) by (le))",
+                  "legendFormat": "p50",
+                  "refId": "A"
+                },
+                {
+                  "expr": "histogram_quantile(0.95, sum(rate(pr_notifier_reconcile_cycle_duration_seconds_bucket[5m])) by (le))",
+                  "legendFormat": "p95",
+                  "refId": "B"
+                },
+                {
+                  "expr": "histogram_quantile(0.99, sum(rate(pr_notifier_reconcile_cycle_duration_seconds_bucket[5m])) by (le))",
+                  "legendFormat": "p99",
+                  "refId": "C"
+                }
+              ],
+              "title": "Reconcile Cycle Latency",
+              "type": "timeseries"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "palette-classic" },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": { "type": "linear" },
+                    "showPoints": "auto",
+                    "spanNulls": true,
+                    "stacking": { "group": "A", "mode": "none" },
+                    "thresholdsStyle": { "mode": "off" }
+                  },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "ops"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+              "id": 6,
+              "options": {
+                "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
+                "tooltip": { "mode": "multi", "sort": "none" }
+              },
+              "targets": [
+                {
+                  "expr": "sum(rate(pr_notifier_reconcile_actions_total[5m])) by (kind)",
+                  "legendFormat": "{{kind}}",
+                  "refId": "A"
+                }
+              ],
+              "title": "Reconcile Actions by Kind",
+              "type": "timeseries"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "palette-classic" },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": { "type": "linear" },
+                    "showPoints": "auto",
+                    "spanNulls": true,
+                    "stacking": { "group": "A", "mode": "none" },
+                    "thresholdsStyle": { "mode": "off" }
+                  },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "ops"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+              "id": 7,
+              "options": {
+                "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
+                "tooltip": { "mode": "multi", "sort": "none" }
+              },
+              "targets": [
+                {
+                  "expr": "sum(rate(pr_notifier_external_api_requests_total{system=\"github\"}[5m])) by (status_code)",
+                  "legendFormat": "github {{status_code}}",
+                  "refId": "A"
+                },
+                {
+                  "expr": "sum(rate(pr_notifier_external_api_requests_total{system=\"slack\"}[5m])) by (status_code)",
+                  "legendFormat": "slack {{status_code}}",
+                  "refId": "B"
+                }
+              ],
+              "title": "External API Status Codes",
+              "type": "timeseries"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "palette-classic" },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": { "type": "linear" },
+                    "showPoints": "auto",
+                    "spanNulls": true,
+                    "stacking": { "group": "A", "mode": "none" },
+                    "thresholdsStyle": { "mode": "off" }
+                  },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+              "id": 8,
+              "options": {
+                "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
+                "tooltip": { "mode": "multi", "sort": "none" }
+              },
+              "targets": [
+                {
+                  "expr": "histogram_quantile(0.95, sum(rate(pr_notifier_external_api_request_duration_seconds_bucket{system=\"github\"}[5m])) by (le))",
+                  "legendFormat": "github p95",
+                  "refId": "A"
+                },
+                {
+                  "expr": "histogram_quantile(0.95, sum(rate(pr_notifier_external_api_request_duration_seconds_bucket{system=\"slack\"}[5m])) by (le))",
+                  "legendFormat": "slack p95",
+                  "refId": "B"
+                }
+              ],
+              "title": "External API Latency p95",
+              "type": "timeseries"
+            },
+            {
+              "datasource": { "type": "loki", "uid": "loki" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "palette-classic" },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": { "type": "auto" },
+                    "inspect": false,
+                    "filterable": true,
+                    "sortBy": [{ "displayName": "Time", "desc": true }]
+                  },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+                },
+                "overrides": [
+                  { "matcher": { "id": "byName", "options": "Time" }, "properties": [{ "id": "custom.width", "value": 170 }] },
+                  { "matcher": { "id": "byName", "options": "pod" }, "properties": [{ "id": "custom.width", "value": 180 }] },
+                  { "matcher": { "id": "byName", "options": "Line" }, "properties": [{ "id": "custom.width", "value": 700 }] }
+                ]
+              },
+              "gridPos": { "h": 10, "w": 24, "x": 0, "y": 20 },
+              "id": 9,
+              "options": {
+                "showHeader": true,
+                "sortBy": [{ "displayName": "Time", "desc": true }]
+              },
+              "targets": [
+                {
+                  "expr": "{namespace=\"github-pr-slack-notifier\"} | json | level=~\"WARNING|ERROR\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "Notifier Warning/Error Logs",
+              "type": "logs"
+            }
+          ],
+          "refresh": "15s",
+          "schemaVersion": 38,
+          "style": "dark",
+          "tags": ["github", "notifier", "slack", "observability"],
+          "templating": { "list": [] },
+          "time": { "from": "now-1h", "to": "now" },
+          "timepicker": {},
+          "timezone": "",
+          "title": "GitHub PR Notifier",
+          "uid": "github-pr-notifier",
+          "version": 1
+        }
