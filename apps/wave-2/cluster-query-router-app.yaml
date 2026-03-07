@@ -25,6 +25,8 @@ spec:
           limits:
             cpu: "300m"
             memory: "256Mi"
+        otel:
+          endpoint: "http://k8s-monitoring-alloy-receiver.monitoring.svc.cluster.local:4317"
         ingress:
           enabled: true
           className: nginx

@@ -88,6 +88,8 @@ spec:
                 }
               ]
             }
+        otel:
+          endpoint: "http://k8s-monitoring-alloy-receiver.monitoring.svc.cluster.local:4317"
         resources:
           requests:
             cpu: 25m
