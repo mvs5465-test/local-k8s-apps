@@ -16,10 +16,10 @@ spec:
           resources:
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 384Mi
             limits:
-              cpu: 200m
-              memory: 512Mi
+              cpu: 500m
+              memory: 768Mi
           retention: "7d"
           persistentVolume:
             enabled: true

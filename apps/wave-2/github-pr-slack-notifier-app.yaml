@@ -32,6 +32,13 @@ spec:
           METRICS_PORT: "9000"
           OTEL_SERVICE_NAME: "github-pr-slack-notifier"
           OTEL_EXPORTER_OTLP_ENDPOINT: "http://k8s-monitoring-alloy-receiver.monitoring.svc.cluster.local:4318/v1/traces"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
   destination:
     server: https://kubernetes.default.svc
     namespace: github-pr-slack-notifier

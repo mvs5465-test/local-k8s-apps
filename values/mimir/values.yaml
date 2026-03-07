@@ -6,6 +6,13 @@ ruler:
 
 ingester:
   replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   zoneAwareReplication:
     enabled: false
   persistentVolume:
@@ -18,15 +25,38 @@ query_scheduler:
   replicas: 1
 
 compactor:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
   persistentVolume:
     size: 2Gi
 
 store_gateway:
   replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
   zoneAwareReplication:
     enabled: false
   persistentVolume:
     size: 2Gi
+
+distributor:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 192Mi
+    limits:
+      cpu: 500m
+      memory: 384Mi
 
 gateway:
   nginx:
