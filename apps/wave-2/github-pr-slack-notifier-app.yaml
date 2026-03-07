@@ -25,6 +25,7 @@ spec:
           GITHUB_INSTALLATION_IDS: "114715075"
           ROUTES_JSON: '[{"name":"org-main","org_pattern":"mvs5465-test","repo_pattern":"*","channel":"C0AK08X7E11"}]'
           POLL_INTERVAL_SECONDS: "10"
+          DISABLE_HISTORICAL_CLOSED_PRS: "false"
           DRY_RUN: "false"
           LOG_LEVEL: "INFO"
           JSON_LOGS: "true"
