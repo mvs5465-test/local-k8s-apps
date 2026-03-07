@@ -24,8 +24,14 @@ spec:
           GITHUB_APP_ID: "3033615"
           GITHUB_INSTALLATION_IDS: "114715075"
           ROUTES_JSON: '[{"name":"org-main","org_pattern":"mvs5465-test","repo_pattern":"*","channel":"C0AK08X7E11"}]'
-          POLL_INTERVAL_SECONDS: "30"
+          POLL_INTERVAL_SECONDS: "5"
           DRY_RUN: "true"
+          LOG_LEVEL: "INFO"
+          JSON_LOGS: "true"
+          METRICS_ENABLED: "true"
+          METRICS_PORT: "9000"
+          OTEL_SERVICE_NAME: "github-pr-slack-notifier"
+          OTEL_EXPORTER_OTLP_ENDPOINT: "http://alloy.monitoring.svc.cluster.local:4318/v1/traces"
   destination:
     server: https://kubernetes.default.svc
     namespace: github-pr-slack-notifier
