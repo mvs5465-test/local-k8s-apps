@@ -35,7 +35,7 @@ dashboards:
                       { "color": "red", "value": 10 }
                     ]
                   },
-                  "unit": "s"
+                  "unit": "short"
                 },
                 "overrides": []
               },
@@ -51,12 +51,12 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.95, sum(rate(pr_notifier_reconcile_cycle_duration_seconds_bucket[5m])) by (le))",
-                  "legendFormat": "p95",
+                  "expr": "sum(pr_notifier_route_pull_requests) or vector(0)",
+                  "legendFormat": "prs",
                   "refId": "A"
                 }
               ],
-              "title": "Reconcile Cycle p95",
+              "title": "Tracked PRs",
               "type": "stat"
             },
             {
@@ -72,7 +72,7 @@ dashboards:
                       { "color": "red", "value": 5 }
                     ]
                   },
-                  "unit": "ops"
+                  "unit": "short"
                 },
                 "overrides": []
               },
@@ -88,12 +88,12 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "sum(rate(pr_notifier_reconcile_pr_processed_total[5m]))",
-                  "legendFormat": "prs/sec",
+                  "expr": "sum(pr_notifier_route_pull_requests_by_approval{approval=\"approved\"}) or vector(0)",
+                  "legendFormat": "approved",
                   "refId": "A"
                 }
               ],
-              "title": "PRs Processed Rate",
+              "title": "Approved PRs",
               "type": "stat"
             },
             {
@@ -109,7 +109,7 @@ dashboards:
                       { "color": "red", "value": 10 }
                     ]
                   },
-                  "unit": "ops"
+                  "unit": "short"
                 },
                 "overrides": []
               },
@@ -125,12 +125,12 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "sum(rate(pr_notifier_external_api_requests_total{system=\"github\"}[5m]))",
-                  "legendFormat": "github req/s",
+                  "expr": "sum(pr_notifier_route_pull_requests_by_checks{checks=\"passed\"}) or vector(0)",
+                  "legendFormat": "passed",
                   "refId": "A"
                 }
               ],
-              "title": "GitHub API Rate",
+              "title": "Checks Passed",
               "type": "stat"
             },
             {
@@ -146,7 +146,7 @@ dashboards:
                       { "color": "red", "value": 10 }
                     ]
                   },
-                  "unit": "ops"
+                  "unit": "short"
                 },
                 "overrides": []
               },
@@ -162,12 +162,12 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "sum(increase(pr_notifier_reconcile_errors_total[15m]))",
-                  "legendFormat": "errors/15m",
+                  "expr": "sum(pr_notifier_route_pull_requests_by_checks{checks=\"failed\"}) or vector(0)",
+                  "legendFormat": "failed",
                   "refId": "A"
                 }
               ],
-              "title": "Reconcile Errors (15m)",
+              "title": "Checks Failed",
               "type": "stat"
             },
             {
