@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: github-pr-slack-notifier
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cluster
+  source:
+    repoURL: https://github.com/mvs5465/github-pr-slack-notifier
+    targetRevision: main
+    path: chart
+    helm:
+      releaseName: github-pr-slack-notifier
+      values: |
+        image:
+          repository: ghcr.io/mvs5465/github-pr-slack-notifier
+          tag: main
+          pullPolicy: Always
+        env:
+          GITHUB_APP_ID: "REPLACE_ME"
+          GITHUB_INSTALLATION_IDS: "REPLACE_ME"
+          ROUTES_JSON: '[{"name":"org-main","org_pattern":"REPLACE_ME","repo_pattern":"*","channel":"C0000000000"}]'
+          POLL_INTERVAL_SECONDS: "30"
+          DRY_RUN: "true"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ai
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
