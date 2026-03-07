@@ -16,6 +16,8 @@ grafana.ini:
     org_role: Viewer
   users:
     allow_sign_up: false
+  tracing.opentelemetry.otlp:
+    address: k8s-monitoring-alloy-receiver.monitoring.svc.cluster.local:4317
 
 service:
   type: ClusterIP

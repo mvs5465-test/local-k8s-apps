@@ -30,6 +30,8 @@ spec:
               paths:
                 - path: /
                   pathType: Prefix
+        otel:
+          endpoint: "http://k8s-monitoring-alloy-receiver.monitoring.svc.cluster.local:4317"
         env:
           WIKI_SITE_NAME: "Cluster Lite Wiki"
         persistence:
