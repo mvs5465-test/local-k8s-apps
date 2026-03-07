@@ -18,17 +18,20 @@ jobs:
       - name: Lint YAML
         run: yamllint -d relaxed apps/ values/ manifests/
 
-  helm-lint:
+  validate-manifests:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: azure/setup-helm@v4
-
-      - name: Lint Helm charts
+      - name: Install kubeconform
         run: |
-          for chart in $(find . -name "Chart.yaml" -exec dirname {} \;); do
-            echo "Linting $chart"
-            helm lint "$chart"
-          done
+          curl -sL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Validate manifests
+        run: |
+          find apps/ manifests/ -name "*.yaml" | xargs kubeconform \
+            -ignore-missing-schemas \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
