@@ -6,7 +6,7 @@ metadata:
 spec:
   project: cluster
   sources:
-    - repoURL: https://github.com/mvs5465/local-k8s-apps
+    - repoURL: https://github.com/mvs5465-test/local-k8s-apps
       targetRevision: HEAD
       ref: values
 
