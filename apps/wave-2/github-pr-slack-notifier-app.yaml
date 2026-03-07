@@ -8,7 +8,7 @@ metadata:
 spec:
   project: cluster
   source:
-    repoURL: https://github.com/mvs5465/github-pr-slack-notifier
+    repoURL: https://github.com/mvs5465-test/github-pr-slack-notifier
     targetRevision: main
     path: chart
     helm:
@@ -19,9 +19,9 @@ spec:
           tag: main
           pullPolicy: Always
         env:
-          GITHUB_APP_ID: "REPLACE_ME"
-          GITHUB_INSTALLATION_IDS: "REPLACE_ME"
-          ROUTES_JSON: '[{"name":"org-main","org_pattern":"REPLACE_ME","repo_pattern":"*","channel":"C0000000000"}]'
+          GITHUB_APP_ID: "3033615"
+          GITHUB_INSTALLATION_IDS: "114715075"
+          ROUTES_JSON: '[{"name":"org-main","org_pattern":"mvs5465-test","repo_pattern":"*","channel":"C0AK08X7E11"}]'
           POLL_INTERVAL_SECONDS: "30"
           DRY_RUN: "true"
   destination:
