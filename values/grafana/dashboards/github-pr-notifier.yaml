@@ -391,7 +391,7 @@ dashboards:
                   { "matcher": { "id": "byName", "options": "Line" }, "properties": [{ "id": "custom.width", "value": 700 }] }
                 ]
               },
-              "gridPos": { "h": 10, "w": 24, "x": 0, "y": 20 },
+              "gridPos": { "h": 10, "w": 24, "x": 0, "y": 54 },
               "id": 9,
               "options": {
                 "showHeader": true,
@@ -584,6 +584,56 @@ dashboards:
                 }
               ],
               "title": "Processed PRs by State (5m)",
+              "type": "timeseries"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "palette-classic" },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": { "type": "linear" },
+                    "showPoints": "auto",
+                    "spanNulls": true,
+                    "stacking": { "group": "A", "mode": "none" },
+                    "thresholdsStyle": { "mode": "off" }
+                  },
+                  "mappings": [],
+                  "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": { "h": 8, "w": 24, "x": 0, "y": 46 },
+              "id": 14,
+              "options": {
+                "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
+                "tooltip": { "mode": "multi", "sort": "none" }
+              },
+              "targets": [
+                {
+                  "expr": "max(pr_notifier_rate_limit_retry_seconds{stage=\"cycle\"}) or vector(0)",
+                  "legendFormat": "current retry seconds",
+                  "refId": "A"
+                },
+                {
+                  "expr": "sum(increase(pr_notifier_rate_limit_events_total{stage=\"cycle\"}[1h]))",
+                  "legendFormat": "rate-limit events (1h)",
+                  "refId": "B"
+                }
+              ],
+              "title": "Rate Limit Backoff",
               "type": "timeseries"
             }
           ],
