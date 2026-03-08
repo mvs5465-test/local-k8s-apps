@@ -256,29 +256,12 @@ data:
         f"mood: {mood_badge}"
       )
 
-      trend_line = (
-        f":chart_with_upwards_trend: *30m trend* "
-        f"pods {trend_arrow(pod_delta, 0.5)} {fmt_delta(pod_delta)}, "
-        f"cpu {trend_arrow(cpu_delta, 0.05)} {fmt_delta(cpu_delta, 'vCPU')}, "
-        f"mem {trend_arrow(mem_delta, 20 * 1024 * 1024)} {fmt_delta(mem_delta, 'bytes')}"
-      )
-      spark_line = (
-        f":bar_chart: *Sparklines* cpu `{sparkline(cpu_series)}`  mem `{sparkline(mem_series)}`"
-      )
-      talker_line = (
-        f":loudspeaker: *Top talkers* noisiest ns: *{noisiest_ns}* ({fmt_num(ns_value)}vCPU), "
-        f"most restarts (24h): *{top_pod_ns}/{top_pod_name}* ({int(round(pod_restart_value))})"
-      )
       sections = [
         f"{opener}.",
         f"{health_emoji} *We are {health}.* _Cluster metrics:_",
         f"*{int(round(pods_running))}/{int(round(pods_total))}* pods running",
         f"*{int(round(argo_synced))}/{int(round(argo_total))}* apps synced",
         f"*{fmt_num(cpu_used)}/{fmt_num(cpu_total)}vCPU*, *{format_bytes(mem_used)}/{format_bytes(mem_total)}*",
-        f":label: *Cluster mood:* _{mood_badge}_",
-        trend_line,
-        spark_line,
-        talker_line,
       ]
       if celebration_line:
         sections.append(celebration_line)
@@ -286,17 +269,12 @@ data:
         sections.append(weekly_section)
 
       payload = {
-        "text": fallback_text,
-        "blocks": [
+        "attachments": [
           {
-            "type": "divider",
-          },
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": "\n".join(sections),
-            },
+            "fallback": fallback_text,
+            "color": sidebar_color,
+            "mrkdwn_in": ["text"],
+            "text": "\n".join(sections),
           },
         ],
       }
