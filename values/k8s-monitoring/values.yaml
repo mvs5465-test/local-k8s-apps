@@ -90,10 +90,10 @@ alloy-metrics:
   alloy:
     resources:
       requests:
-        cpu: 50m
+        cpu: 25m
         memory: 256Mi
       limits:
-        cpu: 500m
+        cpu: 300m
         memory: 512Mi
 
 alloy-singleton:
@@ -101,24 +101,13 @@ alloy-singleton:
   alloy:
     resources:
       requests:
-        cpu: 25m
-        memory: 64Mi
+        cpu: 20m
+        memory: 48Mi
       limits:
-        cpu: 250m
-        memory: 256Mi
+        cpu: 150m
+        memory: 128Mi
 
 alloy-receiver:
-  enabled: true
-  alloy:
-    resources:
-      requests:
-        cpu: 50m
-        memory: 128Mi
-      limits:
-        cpu: 300m
-        memory: 256Mi
-
-alloy-logs:
   enabled: true
   alloy:
     resources:
@@ -126,8 +115,19 @@ alloy-logs:
         cpu: 25m
         memory: 96Mi
       limits:
-        cpu: 300m
-        memory: 256Mi
+        cpu: 200m
+        memory: 192Mi
+
+alloy-logs:
+  enabled: true
+  alloy:
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 192Mi
 
 extraObjects:
   - apiVersion: monitoring.coreos.com/v1
