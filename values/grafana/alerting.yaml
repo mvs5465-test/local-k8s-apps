@@ -395,7 +395,7 @@ alerting:
               type: loki
               uid: loki
             editorMode: code
-            expr: sum(count_over_time({app_kubernetes_io_name="grafana"} |= "Notify for alerts failed" [10m]))
+            expr: sum(count_over_time({app_kubernetes_io_name="grafana"} |= "logger=ngalert.notifier" |= "Notify for alerts failed" [10m]))
             instant: true
             intervalMs: 1000
             maxDataPoints: 43200
