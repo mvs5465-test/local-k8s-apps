@@ -2,8 +2,12 @@ name: Docker Build
 
 on:
   pull_request:
+    paths:
+      - "docker/ollama-mcp-bridge/Dockerfile"
   push:
     branches: [main]
+    paths:
+      - "docker/ollama-mcp-bridge/Dockerfile"
   workflow_dispatch:
 
 jobs:
