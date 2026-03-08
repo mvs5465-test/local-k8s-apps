@@ -9,6 +9,7 @@ metadata:
     argocd-image-updater.argoproj.io/image-list: notifier=ghcr.io/mvs5465-test/github-pr-slack-notifier:main
     argocd-image-updater.argoproj.io/notifier.allow-tags: regexp:^main$
     argocd-image-updater.argoproj.io/notifier.update-strategy: digest
+    argocd-image-updater.argoproj.io/notifier.force-update: "true"
     argocd-image-updater.argoproj.io/notifier.helm.image-name: image.repository
     argocd-image-updater.argoproj.io/notifier.helm.image-tag: image.tag
     argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-repo-creds
