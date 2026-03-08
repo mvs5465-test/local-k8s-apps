@@ -205,6 +205,26 @@ data:
         "Cosmic control room check-in",
       ])
 
+      pod_series = prom_query_range('sum(kube_pod_status_phase{phase="Running"})', range_start, range_end, 300)
+      cpu_series = prom_query_range_first([
+        'sum(rate(node_cpu_seconds_total{mode!="idle"}[5m]))',
+        'sum(rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m]))',
+      ], range_start, range_end, 300)
+      mem_series = prom_query_range_first([
+        "sum(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)",
+        'sum(container_memory_working_set_bytes{container!="",container!="POD"})',
+      ], range_start, range_end, 300)
+
+      pod_delta = (pod_series[-1] - pod_series[0]) if len(pod_series) >= 2 else 0.0
+      cpu_delta = (cpu_series[-1] - cpu_series[0]) if len(cpu_series) >= 2 else 0.0
+      mem_delta = (mem_series[-1] - mem_series[0]) if len(mem_series) >= 2 else 0.0
+
+      ns_labels, ns_value = prom_top('topk(1, sum by (namespace) (rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m])))')
+      noisiest_ns = ns_labels.get("namespace", "unknown")
+      pod_labels, pod_restart_value = prom_top('topk(1, sum by (namespace,pod) (increase(kube_pod_container_status_restarts_total[24h])))')
+      top_pod_ns = pod_labels.get("namespace", "unknown")
+      top_pod_name = pod_labels.get("pod", "unknown")
+
       healthy_24h = (
         prom_query('sum(max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",namespace!="kube-system"}[24h]))') == 0
         and prom_query('sum(max_over_time(kube_pod_container_status_waiting_reason{reason=~"ErrImagePull|ImagePullBackOff",namespace!="kube-system"}[24h]))') == 0
