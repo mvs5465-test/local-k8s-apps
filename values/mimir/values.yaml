@@ -2,7 +2,15 @@ alertmanager:
   enabled: false
 
 ruler:
-  enabled: false
+  enabled: true
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
 
 ingester:
   replicas: 1
