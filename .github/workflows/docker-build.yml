@@ -19,3 +19,4 @@ jobs:
     with:
       image_name: mvs5465-test/ollama-mcp-bridge
       context: docker/ollama-mcp-bridge
+      dockerfile: ./docker/ollama-mcp-bridge/Dockerfile
