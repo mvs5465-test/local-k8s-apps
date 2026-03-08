@@ -8,9 +8,18 @@ metadata:
 spec:
   project: cluster
   source:
-    repoURL: https://github.com/mvs5465-test/local-k8s-apps
-    targetRevision: main
-    path: manifests/argocd-image-updater
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argocd-image-updater
+    targetRevision: 1.1.1
+    helm:
+      releaseName: argocd-image-updater
+      values: |
+        crds:
+          install: false
+        config:
+          log.level: info
+          git.email: argocd-image-updater@local
+          git.user: argocd-image-updater
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

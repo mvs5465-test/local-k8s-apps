@@ -34,7 +34,7 @@
 - Mimir gateway now serves a stub `/metrics` response so chart 6.0.5 no longer reports a false down scrape
 
 ### Added
-- Argo CD Image Updater pilot application (`apps/wave-1/argocd-image-updater-app.yaml`) with rendered manifests in `manifests/argocd-image-updater/`
+- Argo CD Image Updater pilot application (`apps/wave-1/argocd-image-updater-app.yaml`) sourced directly from the official Argo Helm chart
 - External Secrets fan-out for Image Updater Git write-back credentials in the `argocd` namespace (`manifests/external-secrets/argocd-image-updater-git-creds.yaml`)
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
 - Grafana Tempo as a dedicated tracing backend in the monitoring namespace
