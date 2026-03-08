@@ -6,7 +6,7 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
   annotations:
-    argocd-image-updater.argoproj.io/image-list: app=ghcr.io/mvs5465-test/cluster-query-router
+    argocd-image-updater.argoproj.io/image-list: app=ghcr.io/mvs5465-test/cluster-query-router:main
     argocd-image-updater.argoproj.io/app.allow-tags: regexp:^main$
     argocd-image-updater.argoproj.io/app.update-strategy: digest
     argocd-image-updater.argoproj.io/app.helm.image-name: image.repository
