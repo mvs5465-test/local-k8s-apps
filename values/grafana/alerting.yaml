@@ -10,8 +10,8 @@ alerting:
           type: slack
           settings:
             url: $__env{GRAFANA_ALERTS_SLACK_WEBHOOK_URL}
-            title: '{{ `{{ .Status | toUpper }}: {{ .CommonLabels.alertname }} ({{ .CommonLabels.severity }})` }}'
-            text: '{{ `{{ range .Alerts }}- {{ .Annotations.summary }}{{ if .Labels.namespace }} ns={{ .Labels.namespace }}{{ end }}{{ if .Labels.pod }} pod={{ .Labels.pod }}{{ end }} {{ end }}` }}'
+            title: '{{ `{{ .Status | toUpper }}: {{ if .CommonLabels.rulename }}{{ .CommonLabels.rulename }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}` }}'
+            text: '{{ `{{ range .Alerts }}1) What: {{ if .Labels.rulename }}{{ .Labels.rulename }}{{ else }}{{ .Labels.alertname }}{{ end }}{{ if .Labels.namespace }} ns={{ .Labels.namespace }}{{ end }}{{ if .Labels.pod }} pod={{ .Labels.pod }}{{ end }}{{ if .Labels.container }} container={{ .Labels.container }}{{ end }} | 2) Why: {{ .Annotations.summary }} | 3) Since: {{ .StartsAt }} {{ end }}` }}'
           disableResolveMessage: false
 
   policies.yaml:
