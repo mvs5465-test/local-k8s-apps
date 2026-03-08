@@ -33,6 +33,7 @@
 - Mimir gateway now serves a stub `/metrics` response so chart 6.0.5 no longer reports a false down scrape
 
 ### Added
+- Image restart controller CronJob and ArgoCD app to explicitly watch selected deployments and restart them when the upstream GHCR digest changes (`apps/wave-2/image-restart-controller-app.yaml`, `manifests/image-restart-controller/cronjob.yaml`)
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
 - Grafana Tempo as a dedicated tracing backend in the monitoring namespace
 - GitHub PR Slack notifier ArgoCD application (`apps/wave-2/github-pr-slack-notifier-app.yaml`)
