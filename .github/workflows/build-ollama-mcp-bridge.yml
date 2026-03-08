@@ -1,4 +1,4 @@
-name: Build ollama-mcp-bridge
+name: Docker Build
 
 on:
   pull_request:
