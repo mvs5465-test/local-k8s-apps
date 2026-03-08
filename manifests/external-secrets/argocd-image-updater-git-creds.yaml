@@ -1,0 +1,29 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterExternalSecret
+metadata:
+  name: argocd-image-updater-git-creds
+spec:
+  namespaceSelectors:
+  - matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: In
+      values:
+      - argocd
+  refreshTime: 3m
+  externalSecretSpec:
+    refreshInterval: 1h
+    secretStoreRef:
+      name: kubernetes-master-secrets
+      kind: ClusterSecretStore
+    target:
+      name: argocd-image-updater-git-creds
+      creationPolicy: Owner
+    data:
+    - secretKey: username
+      remoteRef:
+        key: argocd-image-updater-master-secret
+        property: git_username
+    - secretKey: password
+      remoteRef:
+        key: argocd-image-updater-master-secret
+        property: git_token
