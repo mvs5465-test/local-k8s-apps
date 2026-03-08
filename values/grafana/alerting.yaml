@@ -17,7 +17,7 @@ alerting:
     apiVersion: 1
     policies:
     - orgId: 1
-      receiver: slack-monitoring-webhook
+      receiver: slack-monitoring
       group_by:
       - grafana_folder
       - alertname
