@@ -15,6 +15,7 @@ jobs:
     with:
       image_name: ${{ github.repository_owner }}/ollama-mcp-bridge
       context: docker/ollama-mcp-bridge
+      push: ${{ github.ref == 'refs/heads/main' }}
       tags: |
         type=raw,value=latest
         type=sha,prefix=sha-
