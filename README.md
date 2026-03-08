@@ -37,6 +37,7 @@ See `local-k8s-argocd` README for Colima mount configuration.
 | 🌌 **Cluster Home** | Custom dark-themed service dashboard | [cluster-home-app.yaml](apps/wave-2/cluster-home-app.yaml) |
 | 📚 **Cluster Lite Wiki** | Seeded local cluster documentation | [cluster-lite-wiki-app.yaml](apps/wave-2/cluster-lite-wiki-app.yaml) |
 | 🔎 **Cluster Query Router** | In-cluster query entrypoint | [cluster-query-router-app.yaml](apps/wave-2/cluster-query-router-app.yaml) |
+| 🩺 **Cluster Health Reporter** | Slack heartbeat with interpreted cluster health summary every 30 minutes | [cluster-health-reporter-app.yaml](apps/wave-2/cluster-health-reporter-app.yaml) |
 | 📊 **Gatus** | Uptime monitoring & status page | [gatus-app.yaml](apps/wave-2/gatus-app.yaml) |
 | 🎬 **Jellyfin** | Media server | [jellyfin-app.yaml](apps/wave-2/jellyfin-app.yaml) |
 | 🪵 **Loki MCP** | Loki MCP bridge service | [loki-mcp-app.yaml](apps/wave-2/loki-mcp-app.yaml) |

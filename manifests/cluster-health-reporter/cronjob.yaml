@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-health-reporter-script
+  namespace: monitoring
+data:
+  report.py: |
+    import json
+    import os
+    import urllib.parse
+    import urllib.request
+
+
+    PROM_URL = os.getenv("PROM_URL", "http://prometheus-server.monitoring.svc.cluster.local")
+    SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", "")
+    TIMEOUT_SECONDS = 10
+
+
+    def prom_query(expr):
+      params = urllib.parse.urlencode({"query": expr})
+      url = f"{PROM_URL}/api/v1/query?{params}"
+      with urllib.request.urlopen(url, timeout=TIMEOUT_SECONDS) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
+      if payload.get("status") != "success":
+        raise RuntimeError(f"prometheus query failed: {expr}")
+      result = payload.get("data", {}).get("result", [])
+      if not result:
+        return 0.0
+      value = result[0].get("value", [None, "0"])[1]
+      return float(value)
+
+
+    def format_bytes(num_bytes):
+      units = ["B", "Ki", "Mi", "Gi", "Ti"]
+      value = float(num_bytes)
+      idx = 0
+      while value >= 1024.0 and idx < len(units) - 1:
+        value /= 1024.0
+        idx += 1
+      if idx == 0:
+        return f"{int(value)}{units[idx]}"
+      return f"{value:.2f}{units[idx]}"
+
+
+    def fmt_num(value):
+      if value >= 100:
+        return f"{value:.0f}"
+      if value >= 10:
+        return f"{value:.1f}"
+      return f"{value:.2f}"
+
+
+    def post_to_slack(text):
+      if not SLACK_WEBHOOK_URL:
+        raise RuntimeError("SLACK_WEBHOOK_URL is not set")
+      body = json.dumps({"text": text}).encode("utf-8")
+      req = urllib.request.Request(
+        SLACK_WEBHOOK_URL,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+      )
+      with urllib.request.urlopen(req, timeout=TIMEOUT_SECONDS) as resp:
+        if resp.status < 200 or resp.status >= 300:
+          raise RuntimeError(f"slack webhook failed: HTTP {resp.status}")
+
+
+    def main():
+      pods_running = prom_query('sum(kube_pod_status_phase{phase="Running"})')
+      pods_total = prom_query('sum(kube_pod_status_phase{phase=~"Pending|Running|Unknown|Failed"})')
+
+      argo_synced = prom_query('count(argocd_app_info{sync_status="Synced"})')
+      argo_total = prom_query("count(argocd_app_info)")
+
+      cpu_used = prom_query('sum(rate(container_cpu_usage_seconds_total{container!="",container!="POD",image!=""}[5m]))')
+      cpu_total = prom_query('sum(kube_node_status_allocatable{resource="cpu",unit="core"})')
+
+      mem_used = prom_query('sum(container_memory_working_set_bytes{container!="",container!="POD",image!=""})')
+      mem_total = prom_query('sum(kube_node_status_allocatable{resource="memory",unit="byte"})')
+
+      crashloop = prom_query('sum(max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",namespace!="kube-system"}[5m]))')
+      image_pull = prom_query('sum(max_over_time(kube_pod_container_status_waiting_reason{reason=~"ErrImagePull|ImagePullBackOff",namespace!="kube-system"}[10m]))')
+
+      pod_ratio = (pods_running / pods_total) if pods_total > 0 else 1.0
+      argo_ratio = (argo_synced / argo_total) if argo_total > 0 else 1.0
+
+      if crashloop > 0 or image_pull > 0 or pod_ratio < 0.95 or argo_ratio < 0.90:
+        health = "experiencing significant issues"
+      elif pod_ratio < 0.99 or argo_ratio < 1.0:
+        health = "partially degraded"
+      else:
+        health = "fully healthy"
+
+      message = (
+        f"Hello, cluster reporting in. We are {health}. Cluster metrics:\n"
+        f"- Pods: {int(round(pods_running))}/{int(round(pods_total))} running\n"
+        f"- Argo: {int(round(argo_synced))}/{int(round(argo_total))} synced\n"
+        f"- Resource pressure: CPU/Mem ({fmt_num(cpu_used)}/{fmt_num(cpu_total)} cores, "
+        f"{format_bytes(mem_used)}/{format_bytes(mem_total)})"
+      )
+
+      post_to_slack(message)
+
+
+    if __name__ == "__main__":
+      main()
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cluster-health-reporter
+  namespace: monitoring
+spec:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: reporter
+            image: python:3.12-alpine
+            imagePullPolicy: IfNotPresent
+            command:
+            - python
+            - /opt/reporter/report.py
+            env:
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-alerting-secret
+                  key: GRAFANA_ALERTS_SLACK_WEBHOOK_URL
+            - name: PROM_URL
+              value: http://prometheus-server.monitoring.svc.cluster.local
+            volumeMounts:
+            - name: script
+              mountPath: /opt/reporter
+              readOnly: true
+            resources:
+              requests:
+                cpu: 20m
+                memory: 64Mi
+              limits:
+                cpu: 100m
+                memory: 128Mi
+          volumes:
+          - name: script
+            configMap:
+              name: cluster-health-reporter-script
+              defaultMode: 0555
