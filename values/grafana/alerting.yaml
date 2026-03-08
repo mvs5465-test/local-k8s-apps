@@ -272,7 +272,7 @@ alerting:
         noDataState: NoData
         execErrState: Error
         annotations:
-          summary: 'Hello from Grafana, the time is {{ $values.A.Value | toTime | tz "America/New_York" | date "2006-01-02 03:04:05 PM MST" }}'
+          summary: 'Hello from Grafana, the time is {{ "{{" }} $values.A.Value | toTime | tz "America/New_York" | date "2006-01-02 03:04:05 PM MST" {{ "}}" }}'
           runbook_url: http://grafana.lan/d/cluster-overview/cluster-overview
         labels:
           severity: info
