@@ -183,12 +183,15 @@ data:
       if crashloop > 0 or image_pull > 0 or pod_ratio < 0.95 or argo_ratio < 0.90:
         health = "experiencing significant issues"
         health_emoji = ":rotating_light:"
+        sidebar_color = "#d50200"
       elif pod_ratio < 0.99 or argo_ratio < 1.0:
         health = "partially degraded"
         health_emoji = ":warning:"
+        sidebar_color = "#f2c037"
       else:
         health = "fully healthy"
         health_emoji = ":sparkles:"
+        sidebar_color = "#2eb67d"
 
       mood_table = {
         "fully healthy": [":sun_with_face: caffeinated raccoon", ":dancer: disco walrus", ":rocket: tiny mission control"],
@@ -204,26 +207,6 @@ data:
         "The cluster tea leaves have been read",
         "Cosmic control room check-in",
       ])
-
-      pod_series = prom_query_range('sum(kube_pod_status_phase{phase="Running"})', range_start, range_end, 300)
-      cpu_series = prom_query_range_first([
-        'sum(rate(node_cpu_seconds_total{mode!="idle"}[5m]))',
-        'sum(rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m]))',
-      ], range_start, range_end, 300)
-      mem_series = prom_query_range_first([
-        "sum(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)",
-        'sum(container_memory_working_set_bytes{container!="",container!="POD"})',
-      ], range_start, range_end, 300)
-
-      pod_delta = (pod_series[-1] - pod_series[0]) if len(pod_series) >= 2 else 0.0
-      cpu_delta = (cpu_series[-1] - cpu_series[0]) if len(cpu_series) >= 2 else 0.0
-      mem_delta = (mem_series[-1] - mem_series[0]) if len(mem_series) >= 2 else 0.0
-
-      ns_labels, ns_value = prom_top('topk(1, sum by (namespace) (rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m])))')
-      noisiest_ns = ns_labels.get("namespace", "unknown")
-      pod_labels, pod_restart_value = prom_top('topk(1, sum by (namespace,pod) (increase(kube_pod_container_status_restarts_total[24h])))')
-      top_pod_ns = pod_labels.get("namespace", "unknown")
-      top_pod_name = pod_labels.get("pod", "unknown")
 
       healthy_24h = (
         prom_query('sum(max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",namespace!="kube-system"}[24h]))') == 0
@@ -256,29 +239,12 @@ data:
         f"mood: {mood_badge}"
       )
 
-      trend_line = (
-        f":chart_with_upwards_trend: *30m trend* "
-        f"pods {trend_arrow(pod_delta, 0.5)} {fmt_delta(pod_delta)}, "
-        f"cpu {trend_arrow(cpu_delta, 0.05)} {fmt_delta(cpu_delta, 'vCPU')}, "
-        f"mem {trend_arrow(mem_delta, 20 * 1024 * 1024)} {fmt_delta(mem_delta, 'bytes')}"
-      )
-      spark_line = (
-        f":bar_chart: *Sparklines* cpu `{sparkline(cpu_series)}`  mem `{sparkline(mem_series)}`"
-      )
-      talker_line = (
-        f":loudspeaker: *Top talkers* noisiest ns: *{noisiest_ns}* ({fmt_num(ns_value)}vCPU), "
-        f"most restarts (24h): *{top_pod_ns}/{top_pod_name}* ({int(round(pod_restart_value))})"
-      )
       sections = [
         f"{opener}.",
         f"{health_emoji} *We are {health}.* _Cluster metrics:_",
         f"*{int(round(pods_running))}/{int(round(pods_total))}* pods running",
         f"*{int(round(argo_synced))}/{int(round(argo_total))}* apps synced",
         f"*{fmt_num(cpu_used)}/{fmt_num(cpu_total)}vCPU*, *{format_bytes(mem_used)}/{format_bytes(mem_total)}*",
-        f":label: *Cluster mood:* _{mood_badge}_",
-        trend_line,
-        spark_line,
-        talker_line,
       ]
       if celebration_line:
         sections.append(celebration_line)
@@ -286,17 +252,12 @@ data:
         sections.append(weekly_section)
 
       payload = {
-        "text": fallback_text,
-        "blocks": [
+        "attachments": [
           {
-            "type": "divider",
-          },
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": "\n".join(sections),
-            },
+            "fallback": fallback_text,
+            "color": sidebar_color,
+            "mrkdwn_in": ["text"],
+            "text": "\n".join(sections),
           },
         ],
       }
