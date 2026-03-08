@@ -1,0 +1,16 @@
+---
+extends: relaxed
+
+rules:
+  comments-indentation: enable
+  empty-lines:
+    max: 2
+    max-start: 0
+    max-end: 1
+  indentation: disable
+  line-length: disable
+  truthy:
+    allowed-values:
+      - "true"
+      - "false"
+    check-keys: false
