@@ -10,8 +10,8 @@ alerting:
           type: slack
           settings:
             url: $__env{GRAFANA_ALERTS_SLACK_WEBHOOK_URL}
-            title: '{{ template "default.title" . }}'
-            text: '{{ template "default.message" . }}'
+            title: '{{ "{{ template \"default.title\" . }}" }}'
+            text: '{{ "{{ template \"default.message\" . }}" }}'
           disableResolveMessage: false
 
   policies.yaml:
