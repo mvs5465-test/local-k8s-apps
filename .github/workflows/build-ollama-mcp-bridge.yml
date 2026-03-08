@@ -1,25 +1,11 @@
-name: Build ollama-mcp-bridge
+name: Docker Build
 
 on:
+  pull_request:
   push:
     branches: [main]
-    paths:
-      - 'docker/ollama-mcp-bridge/**'
   workflow_dispatch:
 
 jobs:
   build-and-push:
-    permissions:
-      contents: read
-      packages: write
     uses: mvs5465-test/.github/.github/workflows/docker-build.yml@main
-    with:
-      image_name: ${{ github.repository_owner }}/ollama-mcp-bridge
-      context: docker/ollama-mcp-bridge
-      tags: |
-        type=raw,value=latest
-        type=sha,prefix=sha-
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref || github.run_id }}
-  cancel-in-progress: true
