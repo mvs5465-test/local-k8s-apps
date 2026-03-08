@@ -307,17 +307,12 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "sum(rate(pr_notifier_external_api_requests_total{system=\"github\"}[5m])) by (status_code)",
-                  "legendFormat": "github {{status_code}}",
+                  "expr": "sum(rate(pr_notifier_external_api_requests_total{system=\"github\"}[5m]))",
+                  "legendFormat": "github calls/s",
                   "refId": "A"
-                },
-                {
-                  "expr": "sum(rate(pr_notifier_external_api_requests_total{system=\"slack\"}[5m])) by (status_code)",
-                  "legendFormat": "slack {{status_code}}",
-                  "refId": "B"
                 }
               ],
-              "title": "External API Status Codes",
+              "title": "GitHub External API Calls Over Time",
               "type": "timeseries"
             },
             {
