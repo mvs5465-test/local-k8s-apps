@@ -21,6 +21,11 @@ spec:
           interval: 2m
           git.email: argocd-image-updater@local
           git.user: argocd-image-updater
+          registries:
+          - name: GHCR
+            prefix: ghcr.io
+            api_url: https://ghcr.io
+            credentials: pullsecret:argocd/ghcr-secret
         extraObjects:
         - apiVersion: argocd-image-updater.argoproj.io/v1alpha1
           kind: ImageUpdater
