@@ -7,6 +7,7 @@ data:
   report.py: |
     import json
     import os
+    import random
     import urllib.parse
     import urllib.request
 
@@ -28,6 +29,14 @@ data:
         return 0.0
       value = result[0].get("value", [None, "0"])[1]
       return float(value)
+
+
+    def prom_query_first(exprs):
+      for expr in exprs:
+        value = prom_query(expr)
+        if value > 0:
+          return value
+      return 0.0
 
 
     def format_bytes(num_bytes):
@@ -72,10 +81,16 @@ data:
       argo_synced = prom_query('count(argocd_app_info{sync_status="Synced"})')
       argo_total = prom_query("count(argocd_app_info)")
 
-      cpu_used = prom_query('sum(rate(container_cpu_usage_seconds_total{container!="",container!="POD",image!=""}[5m]))')
+      cpu_used = prom_query_first([
+        'sum(rate(node_cpu_seconds_total{mode!="idle"}[5m]))',
+        'sum(rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m]))',
+      ])
       cpu_total = prom_query('sum(kube_node_status_allocatable{resource="cpu",unit="core"})')
 
-      mem_used = prom_query('sum(container_memory_working_set_bytes{container!="",container!="POD",image!=""})')
+      mem_used = prom_query_first([
+        "sum(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)",
+        'sum(container_memory_working_set_bytes{container!="",container!="POD"})',
+      ])
       mem_total = prom_query('sum(kube_node_status_allocatable{resource="memory",unit="byte"})')
 
       crashloop = prom_query('sum(max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",namespace!="kube-system"}[5m]))')
@@ -91,12 +106,19 @@ data:
       else:
         health = "fully healthy"
 
+      opener = random.choice([
+        "Hello from the cluster clubhouse",
+        "Bleep bloop from your tiny datacenter robots",
+        "Status pigeon just landed from the kube skies",
+        "The cluster tea leaves have been read",
+        "Cosmic control room check-in",
+      ])
+
       message = (
-        f"Hello, cluster reporting in. We are {health}. Cluster metrics:\n"
-        f"- Pods: {int(round(pods_running))}/{int(round(pods_total))} running\n"
-        f"- Argo: {int(round(argo_synced))}/{int(round(argo_total))} synced\n"
-        f"- Resource pressure: CPU/Mem ({fmt_num(cpu_used)}/{fmt_num(cpu_total)} cores, "
-        f"{format_bytes(mem_used)}/{format_bytes(mem_total)})"
+        f"{opener}. We are {health}. Cluster metrics:\n"
+        f"{int(round(pods_running))}/{int(round(pods_total))} pods running\n"
+        f"{int(round(argo_synced))}/{int(round(argo_total))} apps synced\n"
+        f"{fmt_num(cpu_used)}/{fmt_num(cpu_total)}vCPU, {format_bytes(mem_used)}/{format_bytes(mem_total)}"
       )
 
       post_to_slack(message)
