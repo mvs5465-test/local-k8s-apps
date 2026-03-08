@@ -59,10 +59,10 @@ data:
       return f"{value:.2f}"
 
 
-    def post_to_slack(text):
+    def post_to_slack(payload):
       if not SLACK_WEBHOOK_URL:
         raise RuntimeError("SLACK_WEBHOOK_URL is not set")
-      body = json.dumps({"text": text}).encode("utf-8")
+      body = json.dumps(payload).encode("utf-8")
       req = urllib.request.Request(
         SLACK_WEBHOOK_URL,
         data=body,
@@ -101,10 +101,16 @@ data:
 
       if crashloop > 0 or image_pull > 0 or pod_ratio < 0.95 or argo_ratio < 0.90:
         health = "experiencing significant issues"
+        health_emoji = ":rotating_light:"
+        sidebar_color = "#d50200"
       elif pod_ratio < 0.99 or argo_ratio < 1.0:
         health = "partially degraded"
+        health_emoji = ":warning:"
+        sidebar_color = "#f2c037"
       else:
         health = "fully healthy"
+        health_emoji = ":sparkles:"
+        sidebar_color = "#2eb67d"
 
       opener = random.choice([
         "Hello from the cluster clubhouse",
@@ -114,14 +120,32 @@ data:
         "Cosmic control room check-in",
       ])
 
-      message = (
+      opener_line = f"{opener}."
+      summary_line = f"{health_emoji} *We are {health}.* _Cluster metrics:_"
+      metrics_block = (
+        f"*{int(round(pods_running))}/{int(round(pods_total))}* pods running\n"
+        f"*{int(round(argo_synced))}/{int(round(argo_total))}* apps synced\n"
+        f"*{fmt_num(cpu_used)}/{fmt_num(cpu_total)}vCPU*, *{format_bytes(mem_used)}/{format_bytes(mem_total)}*"
+      )
+      text_fallback = (
         f"{opener}. We are {health}. Cluster metrics:\n"
         f"{int(round(pods_running))}/{int(round(pods_total))} pods running\n"
         f"{int(round(argo_synced))}/{int(round(argo_total))} apps synced\n"
         f"{fmt_num(cpu_used)}/{fmt_num(cpu_total)}vCPU, {format_bytes(mem_used)}/{format_bytes(mem_total)}"
       )
 
-      post_to_slack(message)
+      payload = {
+        "text": text_fallback,
+        "attachments": [
+          {
+            "color": sidebar_color,
+            "mrkdwn_in": ["text"],
+            "text": f"{opener_line}\n{summary_line}\n{metrics_block}",
+          }
+        ],
+      }
+
+      post_to_slack(payload)
 
 
     if __name__ == "__main__":
