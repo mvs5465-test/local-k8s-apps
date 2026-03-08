@@ -18,8 +18,47 @@ spec:
           install: true
         config:
           log.level: info
+          interval: 2m
           git.email: argocd-image-updater@local
           git.user: argocd-image-updater
+        extraObjects:
+        - apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+          kind: ImageUpdater
+          metadata:
+            name: cluster-apps-annotation-updater
+            namespace: argocd
+          spec:
+            applicationRefs:
+            - namePattern: "cluster-home"
+              labelSelectors:
+                matchLabels:
+                  app.kubernetes.io/part-of: cluster-apps
+                  cluster.local/wave: "2"
+              useAnnotations: true
+            - namePattern: "cluster-lite-wiki"
+              labelSelectors:
+                matchLabels:
+                  app.kubernetes.io/part-of: cluster-apps
+                  cluster.local/wave: "2"
+              useAnnotations: true
+            - namePattern: "cluster-query-router"
+              labelSelectors:
+                matchLabels:
+                  app.kubernetes.io/part-of: cluster-apps
+                  cluster.local/wave: "2"
+              useAnnotations: true
+            - namePattern: "github-pr-slack-notifier"
+              labelSelectors:
+                matchLabels:
+                  app.kubernetes.io/part-of: cluster-apps
+                  cluster.local/wave: "2"
+              useAnnotations: true
+            - namePattern: "loki-mcp"
+              labelSelectors:
+                matchLabels:
+                  app.kubernetes.io/part-of: cluster-apps
+                  cluster.local/wave: "2"
+              useAnnotations: true
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
