@@ -24,6 +24,7 @@
 - github-pr-slack-notifier now deploys to its own namespace (`github-pr-slack-notifier`) with matching ESO secret fan-out
 - Grafana canary heartbeat alert is removed in favor of the dedicated CronJob status reporter message
 - Cluster health reporter heartbeat now includes styled Slack payloads, trend arrows, sparklines, mood badges, top talkers, and periodic celebration/personality callouts
+- github-pr-slack-notifier now opts into Argo CD Image Updater digest tracking with Git write-back on the `main` tag
 
 ### Fixed
 - Grafana alert contact point now uses native Slack notifier payload formatting to avoid incoming webhook HTTP 400 payload mismatch errors
@@ -33,6 +34,8 @@
 - Mimir gateway now serves a stub `/metrics` response so chart 6.0.5 no longer reports a false down scrape
 
 ### Added
+- Argo CD Image Updater pilot application (`apps/wave-1/argocd-image-updater-app.yaml`) with rendered manifests in `manifests/argocd-image-updater/`
+- External Secrets fan-out for Image Updater Git write-back credentials in the `argocd` namespace (`manifests/external-secrets/argocd-image-updater-git-creds.yaml`)
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
 - Grafana Tempo as a dedicated tracing backend in the monitoring namespace
 - GitHub PR Slack notifier ArgoCD application (`apps/wave-2/github-pr-slack-notifier-app.yaml`)
