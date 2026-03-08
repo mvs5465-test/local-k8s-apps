@@ -35,7 +35,6 @@
 
 ### Added
 - Argo CD Image Updater pilot application (`apps/wave-1/argocd-image-updater-app.yaml`) sourced directly from the official Argo Helm chart
-- External Secrets fan-out for Image Updater Git write-back credentials in the `argocd` namespace (`manifests/external-secrets/argocd-image-updater-git-creds.yaml`)
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
 - Grafana Tempo as a dedicated tracing backend in the monitoring namespace
 - GitHub PR Slack notifier ArgoCD application (`apps/wave-2/github-pr-slack-notifier-app.yaml`)

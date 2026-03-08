@@ -15,7 +15,7 @@ spec:
       releaseName: argocd-image-updater
       values: |
         crds:
-          install: false
+          install: true
         config:
           log.level: info
           git.email: argocd-image-updater@local
