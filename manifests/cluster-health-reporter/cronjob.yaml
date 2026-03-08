@@ -183,15 +183,12 @@ data:
       if crashloop > 0 or image_pull > 0 or pod_ratio < 0.95 or argo_ratio < 0.90:
         health = "experiencing significant issues"
         health_emoji = ":rotating_light:"
-        sidebar_color = "#d50200"
       elif pod_ratio < 0.99 or argo_ratio < 1.0:
         health = "partially degraded"
         health_emoji = ":warning:"
-        sidebar_color = "#f2c037"
       else:
         health = "fully healthy"
         health_emoji = ":sparkles:"
-        sidebar_color = "#2eb67d"
 
       mood_table = {
         "fully healthy": [":sun_with_face: caffeinated raccoon", ":dancer: disco walrus", ":rocket: tiny mission control"],
@@ -272,7 +269,6 @@ data:
         f":loudspeaker: *Top talkers* noisiest ns: *{noisiest_ns}* ({fmt_num(ns_value)}vCPU), "
         f"most restarts (24h): *{top_pod_ns}/{top_pod_name}* ({int(round(pod_restart_value))})"
       )
-
       sections = [
         f"{opener}.",
         f"{health_emoji} *We are {health}.* _Cluster metrics:_",
@@ -290,13 +286,18 @@ data:
         sections.append(weekly_section)
 
       payload = {
-        "attachments": [
+        "text": fallback_text,
+        "blocks": [
           {
-            "fallback": fallback_text,
-            "color": sidebar_color,
-            "mrkdwn_in": ["text"],
-            "text": "\n".join(sections),
-          }
+            "type": "divider",
+          },
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": "\n".join(sections),
+            },
+          },
         ],
       }
 
