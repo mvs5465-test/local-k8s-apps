@@ -31,20 +31,20 @@ data:
       return payload.get("data", {}).get("result", [])
 
 
-    def prom_query_first(exprs):
-      for expr in exprs:
-        value = prom_query(expr)
-        if value > 0:
-          return value
-      return 0.0
-
-
     def prom_query(expr):
       result = prom_instant(expr)
       if not result:
         return 0.0
       value = result[0].get("value", [None, "0"])[1]
       return float(value)
+
+
+    def prom_query_first(exprs):
+      for expr in exprs:
+        value = prom_query(expr)
+        if value > 0:
+          return value
+      return 0.0
 
 
     def prom_top(expr):
