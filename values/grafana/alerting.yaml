@@ -2,6 +2,9 @@ alerting:
   contactpoints.yaml:
     secret:
       apiVersion: 1
+      deleteContactPoints:
+      - orgId: 1
+        uid: grafana-default-email
       contactPoints:
       - orgId: 1
         name: slack-monitoring
@@ -204,6 +207,237 @@ alerting:
         labels:
           severity: warning
           category: kubernetes
+
+      - uid: k8s-image-pull-backoff
+        title: ImagePullBackOffActive
+        condition: B
+        data:
+        - refId: A
+          datasourceUid: prometheus
+          relativeTimeRange:
+            from: 600
+            to: 0
+          model:
+            datasource:
+              type: prometheus
+              uid: prometheus
+            editorMode: code
+            expr: sum by (namespace, pod, container, reason) (max_over_time(kube_pod_container_status_waiting_reason{reason=~"ErrImagePull|ImagePullBackOff", namespace!="kube-system"}[10m]))
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            range: false
+            refId: A
+        - refId: B
+          datasourceUid: __expr__
+          relativeTimeRange:
+            from: 0
+            to: 0
+          model:
+            conditions:
+            - evaluator:
+                params:
+                - 0
+                type: gt
+              operator:
+                type: and
+              query:
+                params:
+                - A
+              reducer:
+                type: last
+              type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: A
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: B
+            type: classic_conditions
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+        annotations:
+          summary: Pod cannot pull image (ErrImagePull/ImagePullBackOff) for at least 5 minutes.
+          runbook_url: http://grafana.lan/dashboards
+        labels:
+          severity: critical
+          category: kubernetes
+
+      - uid: argocd-comparison-error-burst
+        title: ArgoComparisonErrorBurst
+        condition: B
+        data:
+        - refId: A
+          datasourceUid: loki
+          relativeTimeRange:
+            from: 600
+            to: 0
+          model:
+            datasource:
+              type: loki
+              uid: loki
+            editorMode: code
+            expr: sum(count_over_time({namespace="argocd"} |= "ComparisonError" [10m]))
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            queryType: instant
+            range: false
+            refId: A
+        - refId: B
+          datasourceUid: __expr__
+          relativeTimeRange:
+            from: 0
+            to: 0
+          model:
+            conditions:
+            - evaluator:
+                params:
+                - 0
+                type: gt
+              operator:
+                type: and
+              query:
+                params:
+                - A
+              reducer:
+                type: last
+              type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: A
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: B
+            type: classic_conditions
+        for: 2m
+        noDataState: OK
+        execErrState: Error
+        annotations:
+          summary: ArgoCD is reporting ComparisonError conditions.
+          runbook_url: http://grafana.lan/dashboards
+        labels:
+          severity: warning
+          category: observability
+
+      - uid: mimir-ruler-api-5xx
+        title: MimirRulerApi5xx
+        condition: B
+        data:
+        - refId: A
+          datasourceUid: loki
+          relativeTimeRange:
+            from: 300
+            to: 0
+          model:
+            datasource:
+              type: loki
+              uid: loki
+            editorMode: code
+            expr: sum(count_over_time({app_kubernetes_io_name="mimir", container="gateway"} |= "GET /prometheus/api/v1/rules" |= " 502 " [5m]))
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            queryType: instant
+            range: false
+            refId: A
+        - refId: B
+          datasourceUid: __expr__
+          relativeTimeRange:
+            from: 0
+            to: 0
+          model:
+            conditions:
+            - evaluator:
+                params:
+                - 0
+                type: gt
+              operator:
+                type: and
+              query:
+                params:
+                - A
+              reducer:
+                type: last
+              type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: A
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: B
+            type: classic_conditions
+        for: 2m
+        noDataState: OK
+        execErrState: Error
+        annotations:
+          summary: Mimir gateway is returning 5xx for ruler/rules API calls.
+          runbook_url: http://grafana.lan/dashboards
+        labels:
+          severity: critical
+          category: observability
+
+      - uid: grafana-alert-delivery-failure
+        title: GrafanaAlertDeliveryFailure
+        condition: B
+        data:
+        - refId: A
+          datasourceUid: loki
+          relativeTimeRange:
+            from: 600
+            to: 0
+          model:
+            datasource:
+              type: loki
+              uid: loki
+            editorMode: code
+            expr: sum(count_over_time({app_kubernetes_io_name="grafana"} |= "Notify for alerts failed" [10m]))
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            queryType: instant
+            range: false
+            refId: A
+        - refId: B
+          datasourceUid: __expr__
+          relativeTimeRange:
+            from: 0
+            to: 0
+          model:
+            conditions:
+            - evaluator:
+                params:
+                - 0
+                type: gt
+              operator:
+                type: and
+              query:
+                params:
+                - A
+              reducer:
+                type: last
+              type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: A
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: B
+            type: classic_conditions
+        for: 2m
+        noDataState: OK
+        execErrState: Error
+        annotations:
+          summary: Grafana failed to deliver one or more alerts to a notifier.
+          runbook_url: http://grafana.lan/dashboards
+        labels:
+          severity: warning
+          category: observability
 
       - uid: grafana-slack-canary-half-hour
         title: GrafanaSlackCanaryHalfHour
