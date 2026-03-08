@@ -20,6 +20,20 @@ spec:
           log.level: info
           git.email: argocd-image-updater@local
           git.user: argocd-image-updater
+        extraObjects:
+        - apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+          kind: ImageUpdater
+          metadata:
+            name: cluster-apps-annotation-updater
+            namespace: argocd
+          spec:
+            applicationRefs:
+            - namePattern: "*"
+              labelSelectors:
+                matchLabels:
+                  app.kubernetes.io/part-of: cluster-apps
+                  cluster.local/wave: "2"
+              useAnnotations: true
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
