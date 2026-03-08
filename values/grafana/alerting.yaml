@@ -204,3 +204,76 @@ alerting:
         labels:
           severity: warning
           category: kubernetes
+
+      - uid: grafana-slack-canary-half-hour
+        title: GrafanaSlackCanaryHalfHour
+        condition: C
+        data:
+        - refId: A
+          datasourceUid: prometheus
+          relativeTimeRange:
+            from: 60
+            to: 0
+          model:
+            datasource:
+              type: prometheus
+              uid: prometheus
+            editorMode: code
+            expr: time()
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            range: false
+            refId: A
+        - refId: B
+          datasourceUid: prometheus
+          relativeTimeRange:
+            from: 60
+            to: 0
+          model:
+            datasource:
+              type: prometheus
+              uid: prometheus
+            editorMode: code
+            expr: (time() % 1800) < bool 60
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            range: false
+            refId: B
+        - refId: C
+          datasourceUid: __expr__
+          relativeTimeRange:
+            from: 0
+            to: 0
+          model:
+            conditions:
+            - evaluator:
+                params:
+                - 0
+                type: gt
+              operator:
+                type: and
+              query:
+                params:
+                - B
+              reducer:
+                type: last
+              type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: B
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: C
+            type: classic_conditions
+        for: 0s
+        noDataState: NoData
+        execErrState: Error
+        annotations:
+          summary: 'Hello from Grafana, the time is {{ $values.A.Value | toTime | tz "America/New_York" | date "2006-01-02 03:04:05 PM MST" }}'
+          runbook_url: http://grafana.lan/d/cluster-overview/cluster-overview
+        labels:
+          severity: info
+          category: canary
