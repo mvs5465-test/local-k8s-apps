@@ -290,9 +290,9 @@ data:
         sections.append(weekly_section)
 
       payload = {
-        "text": fallback_text,
         "attachments": [
           {
+            "fallback": fallback_text,
             "color": sidebar_color,
             "mrkdwn_in": ["text"],
             "text": "\n".join(sections),
