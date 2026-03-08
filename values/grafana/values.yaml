@@ -1,6 +1,7 @@
 replicas: 1
 
 adminPassword: admin
+envFromSecret: grafana-alerting-secret
 
 persistence:
   enabled: false

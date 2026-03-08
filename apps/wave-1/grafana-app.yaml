@@ -17,6 +17,7 @@ spec:
         releaseName: grafana
         valueFiles:
           - $values/values/grafana/values.yaml
+          - $values/values/grafana/alerting.yaml
           - $values/values/grafana/dashboards/cluster-overview.yaml
           - $values/values/grafana/dashboards/loki-metrics.yaml
           - $values/values/grafana/dashboards/pod-deep-dive.yaml

@@ -1,0 +1,205 @@
+alerting:
+  contactpoints.yaml:
+    secret:
+      apiVersion: 1
+      contactPoints:
+      - orgId: 1
+        name: slack-monitoring
+        receivers:
+        - uid: slack-monitoring-webhook
+          type: webhook
+          settings:
+            url: $__env{GRAFANA_ALERTS_SLACK_WEBHOOK_URL}
+            httpMethod: POST
+          disableResolveMessage: false
+
+  policies.yaml:
+    apiVersion: 1
+    policies:
+    - orgId: 1
+      receiver: slack-monitoring-webhook
+      group_by:
+      - grafana_folder
+      - alertname
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+
+  rules.yaml:
+    apiVersion: 1
+    groups:
+    - orgId: 1
+      name: k8s-pod-health
+      folder: Kubernetes Alerts
+      interval: 1m
+      rules:
+      - uid: k8s-pod-crashloop
+        title: K8sPodCrashLoopBackOff
+        condition: B
+        data:
+        - refId: A
+          datasourceUid: prometheus
+          relativeTimeRange:
+            from: 300
+            to: 0
+          model:
+            datasource:
+              type: prometheus
+              uid: prometheus
+            editorMode: code
+            expr: sum by (namespace, pod, container) (max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff", namespace!="kube-system"}[5m]))
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            range: false
+            refId: A
+        - refId: B
+          datasourceUid: __expr__
+          relativeTimeRange:
+            from: 0
+            to: 0
+          model:
+            conditions:
+            - evaluator:
+                params:
+                - 0
+                type: gt
+              operator:
+                type: and
+              query:
+                params:
+                - A
+              reducer:
+                type: last
+              type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: A
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: B
+            type: classic_conditions
+        for: 5m
+        noDataState: NoData
+        execErrState: Error
+        annotations:
+          summary: Pod has been in CrashLoopBackOff for at least 5 minutes.
+          runbook_url: http://grafana.lan/dashboards
+        labels:
+          severity: critical
+          category: kubernetes
+
+      - uid: k8s-pod-not-ready
+        title: K8sPodNotReady
+        condition: B
+        data:
+        - refId: A
+          datasourceUid: prometheus
+          relativeTimeRange:
+            from: 600
+            to: 0
+          model:
+            datasource:
+              type: prometheus
+              uid: prometheus
+            editorMode: code
+            expr: sum by (namespace, pod) (max_over_time(kube_pod_status_phase{phase=~"Pending|Failed|Unknown", namespace!="kube-system"}[10m]))
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            range: false
+            refId: A
+        - refId: B
+          datasourceUid: __expr__
+          relativeTimeRange:
+            from: 0
+            to: 0
+          model:
+            conditions:
+            - evaluator:
+                params:
+                - 0
+                type: gt
+              operator:
+                type: and
+              query:
+                params:
+                - A
+              reducer:
+                type: last
+              type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: A
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: B
+            type: classic_conditions
+        for: 10m
+        noDataState: NoData
+        execErrState: Error
+        annotations:
+          summary: Pod is stuck in Pending/Failed/Unknown for at least 10 minutes.
+          runbook_url: http://grafana.lan/dashboards
+        labels:
+          severity: warning
+          category: kubernetes
+
+      - uid: k8s-pod-restarts-spiking
+        title: K8sPodRestartsSpiking
+        condition: B
+        data:
+        - refId: A
+          datasourceUid: prometheus
+          relativeTimeRange:
+            from: 900
+            to: 0
+          model:
+            datasource:
+              type: prometheus
+              uid: prometheus
+            editorMode: code
+            expr: sum by (namespace, pod, container) (increase(kube_pod_container_status_restarts_total{namespace!="kube-system"}[15m]))
+            instant: true
+            intervalMs: 1000
+            maxDataPoints: 43200
+            range: false
+            refId: A
+        - refId: B
+          datasourceUid: __expr__
+          relativeTimeRange:
+            from: 0
+            to: 0
+          model:
+            conditions:
+            - evaluator:
+                params:
+                - 3
+                type: gt
+              operator:
+                type: and
+              query:
+                params:
+                - A
+              reducer:
+                type: last
+              type: query
+            datasource:
+              type: __expr__
+              uid: __expr__
+            expression: A
+            intervalMs: 1000
+            maxDataPoints: 43200
+            refId: B
+            type: classic_conditions
+        for: 5m
+        noDataState: NoData
+        execErrState: Error
+        annotations:
+          summary: Pod container restarted more than 3 times in 15 minutes.
+          runbook_url: http://grafana.lan/dashboards
+        labels:
+          severity: warning
+          category: kubernetes
