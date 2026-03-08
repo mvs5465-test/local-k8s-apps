@@ -12,6 +12,7 @@
 - App manifests are now grouped by ArgoCD sync wave (`apps/wave-0`, `apps/wave-1`, `apps/wave-2`) instead of `apps/system` and `apps/services`
 - Cluster-query-router now connects directly to the in-cluster Ollama service
 - Grafana now provisions the dotdc community Kubernetes dashboards in a dedicated folder
+- Grafana now provisions baseline Kubernetes alert rules and a default notification policy from Git
 - Gatus health checks now cover cluster-home, cluster-lite-wiki, and cluster-query-router, and remove the stale Ollama check
 - Grafana now provisions official Loki and Mimir dashboards in an Observability Community folder
 - Grafana now provisions the official Tempo Writes dashboard in the Observability Community folder
@@ -33,6 +34,8 @@
 - Grafana Tempo as a dedicated tracing backend in the monitoring namespace
 - GitHub PR Slack notifier ArgoCD application (`apps/wave-2/github-pr-slack-notifier-app.yaml`)
 - External Secrets fan-out manifest for notifier runtime credentials (`manifests/external-secrets/github-pr-slack-notifier-secret.yaml`)
+- External Secrets fan-out manifest for Grafana alerting Slack webhook (`manifests/external-secrets/grafana-alerting-secret.yaml`)
+- Grafana alerting values file with pod crashloop, pod not-ready, and restart-spike rules (`values/grafana/alerting.yaml`)
 
 ## [v1.4.0] - 2026-02-22 - AI Stack & Documentation Improvements
 
