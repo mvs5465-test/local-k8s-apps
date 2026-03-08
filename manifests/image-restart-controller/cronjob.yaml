@@ -36,11 +36,11 @@ metadata:
   namespace: monitoring
 data:
   restart_if_digest_changed.py: |
+    import base64
     import json
     import os
     import re
     import ssl
-    import urllib.error
     import urllib.parse
     import urllib.request
     from datetime import datetime, timezone
@@ -51,36 +51,37 @@ data:
     KUBE_BASE = f"https://{KUBE_API}:{KUBE_PORT}"
     TOKEN_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token"
     CA_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    GHCR_DOCKERCFG_PATH = "/etc/ghcr/.dockerconfigjson"
 
     WATCH_ITEMS = [
       {
         "namespace": "services",
         "deployment": "cluster-home",
-        "container": "cluster-home",
+        "container": "home",
         "image": "ghcr.io/mvs5465-test/cluster-home:main",
       },
       {
         "namespace": "services",
         "deployment": "cluster-lite-wiki",
-        "container": "cluster-lite-wiki",
+        "container": "wiki",
         "image": "ghcr.io/mvs5465-test/cluster-lite-wiki:main",
       },
       {
         "namespace": "ai",
         "deployment": "cluster-query-router",
-        "container": "cluster-query-router",
+        "container": "server",
         "image": "ghcr.io/mvs5465-test/cluster-query-router:main",
       },
       {
         "namespace": "github-pr-slack-notifier",
         "deployment": "github-pr-slack-notifier-github-pr-slack-notifier",
-        "container": "github-pr-slack-notifier",
+        "container": "app",
         "image": "ghcr.io/mvs5465-test/github-pr-slack-notifier:main",
       },
       {
         "namespace": "monitoring",
         "deployment": "loki-mcp",
-        "container": "loki-mcp",
+        "container": "server",
         "image": "ghcr.io/mvs5465-test/loki-mcp-server:main",
       },
     ]
@@ -93,12 +94,27 @@ data:
         return f.read().strip()
 
 
-    def kube_request(path, method="GET", payload=None):
-      token = load_token()
+    def load_ghcr_auth_header():
+      with open(GHCR_DOCKERCFG_PATH, "r", encoding="utf-8") as f:
+        cfg = json.loads(f.read())
+      auths = cfg.get("auths", {})
+      ghcr = auths.get("ghcr.io", {})
+      auth = ghcr.get("auth")
+      if auth:
+        return f"Basic {auth}"
+      username = ghcr.get("username")
+      password = ghcr.get("password")
+      if not username or not password:
+        raise RuntimeError("ghcr credentials not found in dockerconfigjson")
+      token = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8")
+      return f"Basic {token}"
+
+
+    def kube_request(serviceaccount_token, path, method="GET", payload=None):
       url = f"{KUBE_BASE}{path}"
       data = None
       headers = {
-        "Authorization": f"Bearer {token}",
+        "Authorization": f"Bearer {serviceaccount_token}",
         "Accept": "application/json",
       }
       if payload is not None:
@@ -119,21 +135,12 @@ data:
       return parts[0], parts[1]
 
 
-    def get_ghcr_token(repo):
-      scope = urllib.parse.quote(f"repository:{repo}:pull", safe=":")
-      token_url = f"https://ghcr.io/token?scope={scope}"
-      req = urllib.request.Request(token_url, headers={"Accept": "application/json"})
-      with urllib.request.urlopen(req, timeout=15) as resp:
-        payload = json.loads(resp.read().decode("utf-8"))
-      return payload.get("token")
-
-
-    def fetch_manifest(repo, reference, token, accept_header):
+    def fetch_manifest(repo, reference, auth_header, accept_header):
       url = f"https://ghcr.io/v2/{repo}/manifests/{reference}"
       req = urllib.request.Request(
         url,
         headers={
-          "Authorization": f"Bearer {token}",
+          "Authorization": auth_header,
           "Accept": accept_header,
         },
       )
@@ -144,17 +151,16 @@ data:
       return payload, digest
 
 
-    def latest_digest_for_arch(image, arch):
+    def latest_digest_for_arch(image, arch, ghcr_auth_header):
       repo_with_host, tag = parse_image_ref(image)
       if not repo_with_host.startswith("ghcr.io/"):
         raise RuntimeError(f"only ghcr.io images are supported: {image}")
       repo = repo_with_host[len("ghcr.io/"):]
-      token = get_ghcr_token(repo)
 
       index_payload, index_digest = fetch_manifest(
         repo,
         tag,
-        token,
+        ghcr_auth_header,
         ", ".join([
           "application/vnd.oci.image.index.v1+json",
           "application/vnd.docker.distribution.manifest.list.v2+json",
@@ -199,13 +205,13 @@ data:
       return False
 
 
-    def pick_pod(namespace, deployment):
+    def pick_pod(serviceaccount_token, namespace, deployment):
       selector = deployment.get("spec", {}).get("selector", {}).get("matchLabels", {})
       if not selector:
         return None
       label_selector = ",".join([f"{k}={v}" for k, v in selector.items()])
       path = f"/api/v1/namespaces/{namespace}/pods?labelSelector={urllib.parse.quote(label_selector, safe='=,')}"
-      pods = kube_request(path)
+      pods = kube_request(serviceaccount_token, path)
       items = pods.get("items", [])
       running = [p for p in items if p.get("status", {}).get("phase") == "Running"]
       if not running:
@@ -213,8 +219,8 @@ data:
       return running[0]
 
 
-    def node_arch(node_name):
-      node = kube_request(f"/api/v1/nodes/{node_name}")
+    def node_arch(serviceaccount_token, node_name):
+      node = kube_request(serviceaccount_token, f"/api/v1/nodes/{node_name}")
       return node.get("status", {}).get("nodeInfo", {}).get("architecture", "amd64")
 
 
@@ -226,7 +232,7 @@ data:
       return ""
 
 
-    def restart_deployment(namespace, deployment_name, latest_digest):
+    def restart_deployment(serviceaccount_token, namespace, deployment_name, latest_digest):
       now = datetime.now(timezone.utc).isoformat()
       patch = {
         "spec": {
@@ -241,6 +247,7 @@ data:
         }
       }
       kube_request(
+        serviceaccount_token,
         f"/apis/apps/v1/namespaces/{namespace}/deployments/{deployment_name}",
         method="PATCH",
         payload=patch,
@@ -249,6 +256,8 @@ data:
 
     def main():
       failures = 0
+      serviceaccount_token = load_token()
+      ghcr_auth_header = load_ghcr_auth_header()
       for item in WATCH_ITEMS:
         ns = item["namespace"]
         deploy_name = item["deployment"]
@@ -256,12 +265,12 @@ data:
         image = item["image"]
         target = f"{ns}/{deploy_name}:{container}"
         try:
-          deployment = kube_request(f"/apis/apps/v1/namespaces/{ns}/deployments/{deploy_name}")
+          deployment = kube_request(serviceaccount_token, f"/apis/apps/v1/namespaces/{ns}/deployments/{deploy_name}")
           if deployment_in_progress(deployment):
             print(f"[skip] {target} rollout in progress")
             continue
 
-          pod = pick_pod(ns, deployment)
+          pod = pick_pod(serviceaccount_token, ns, deployment)
           if not pod:
             print(f"[skip] {target} no running pod found")
             continue
@@ -272,14 +281,14 @@ data:
             print(f"[skip] {target} could not parse running digest from imageID={image_id}")
             continue
 
-          arch = node_arch(pod.get("spec", {}).get("nodeName", ""))
-          latest_digest = latest_digest_for_arch(image, arch)
+          arch = node_arch(serviceaccount_token, pod.get("spec", {}).get("nodeName", ""))
+          latest_digest = latest_digest_for_arch(image, arch, ghcr_auth_header)
           if latest_digest == running_digest:
             print(f"[ok]   {target} digest unchanged ({running_digest})")
             continue
 
           print(f"[diff] {target} running={running_digest} latest={latest_digest} -> restart")
-          restart_deployment(ns, deploy_name, latest_digest)
+          restart_deployment(serviceaccount_token, ns, deploy_name, latest_digest)
         except Exception as exc:  # pylint: disable=broad-exception-caught
           failures += 1
           print(f"[err]  {target} {exc}")
@@ -319,6 +328,9 @@ spec:
             - name: script
               mountPath: /opt/controller
               readOnly: true
+            - name: ghcr-secret
+              mountPath: /etc/ghcr
+              readOnly: true
             resources:
               requests:
                 cpu: 25m
@@ -331,3 +343,7 @@ spec:
             configMap:
               name: image-restart-controller-script
               defaultMode: 0555
+          - name: ghcr-secret
+            secret:
+              secretName: ghcr-secret
+              optional: false
