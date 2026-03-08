@@ -14,10 +14,14 @@ alerting:
           settings:
             url: $__env{GRAFANA_ALERTS_SLACK_WEBHOOK_URL}
             title: '{{ `{{ .Status | toUpper }}: {{ if .CommonLabels.rulename }}{{ .CommonLabels.rulename }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}` }}'
-            text: '{{ `{{ range .Alerts }}*What:* {{ if .Labels.rulename }}{{ .Labels.rulename }}{{ else }}{{ .Labels.alertname }}{{ end }}{{ if .Labels.namespace }} ns={{ .Labels.namespace }}{{ end }}{{ if .Labels.pod }} pod={{ .Labels.pod }}{{ end }}{{ if .Labels.container }} container={{ .Labels.container }}{{ end }}
-*Why:* {{ .Annotations.summary }}
-*Since:* {{ .StartsAt }}
-{{ end }}` }}'
+            text: |-
+              {{ `{{ range .Alerts }}*What:* {{ if .Labels.rulename }}{{ .Labels.rulename }}{{ else }}{{ .Labels.alertname }}{{ end }}
+              *Pod:* {{ if .Labels.pod }}{{ .Labels.pod }}{{ else }}unknown{{ end }}
+              *Namespace:* {{ if .Labels.namespace }}{{ .Labels.namespace }}{{ else }}unknown{{ end }}
+              *Container:* {{ if .Labels.container }}{{ .Labels.container }}{{ else }}unknown{{ end }}
+              *Why:* {{ .Annotations.summary }}
+              *Since:* {{ .StartsAt }}
+              {{ end }}` }}
           disableResolveMessage: false
 
   policies.yaml:
