@@ -9,10 +9,10 @@ tempo:
     remoteWriteUrl: "http://prometheus-server.monitoring.svc.cluster.local/api/v1/write"
     processor:
       service_graphs:
-        wait: 10s
-        max_items: 10000
+        wait: 15s
+        max_items: 5000
       span_metrics:
-        enable_target_info: true
+        enable_target_info: false
   resources:
     requests:
       cpu: 100m
