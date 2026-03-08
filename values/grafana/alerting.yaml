@@ -10,8 +10,8 @@ alerting:
           type: slack
           settings:
             url: $__env{GRAFANA_ALERTS_SLACK_WEBHOOK_URL}
-            title: '{{ "{{ template \"default.title\" . }}" }}'
-            text: '{{ "{{ template \"default.message\" . }}" }}'
+            title: '{{ `{{ .Status | toUpper }}: {{ .CommonLabels.alertname }} ({{ .CommonLabels.severity }})` }}'
+            text: '{{ `{{ range .Alerts }}- {{ .Annotations.summary }}{{ if .Labels.namespace }} ns={{ .Labels.namespace }}{{ end }}{{ if .Labels.pod }} pod={{ .Labels.pod }}{{ end }} {{ end }}` }}'
           disableResolveMessage: false
 
   policies.yaml:
@@ -82,7 +82,7 @@ alerting:
             refId: B
             type: classic_conditions
         for: 5m
-        noDataState: NoData
+        noDataState: OK
         execErrState: Error
         annotations:
           summary: Pod has been in CrashLoopBackOff for at least 5 minutes.
@@ -139,7 +139,7 @@ alerting:
             refId: B
             type: classic_conditions
         for: 10m
-        noDataState: NoData
+        noDataState: OK
         execErrState: Error
         annotations:
           summary: Pod is stuck in Pending/Failed/Unknown for at least 10 minutes.
@@ -196,7 +196,7 @@ alerting:
             refId: B
             type: classic_conditions
         for: 5m
-        noDataState: NoData
+        noDataState: OK
         execErrState: Error
         annotations:
           summary: Pod container restarted more than 3 times in 15 minutes.
