@@ -34,6 +34,7 @@
 - Grafana Mimir as a dedicated metrics backend in the monitoring namespace
 - Grafana Tempo as a dedicated tracing backend in the monitoring namespace
 - GitHub PR Slack notifier ArgoCD application (`apps/wave-2/github-pr-slack-notifier-app.yaml`)
+- Cluster health reporter ArgoCD application and 30-minute Slack status CronJob (`apps/wave-2/cluster-health-reporter-app.yaml`, `manifests/cluster-health-reporter/cronjob.yaml`)
 - External Secrets fan-out manifest for notifier runtime credentials (`manifests/external-secrets/github-pr-slack-notifier-secret.yaml`)
 - External Secrets fan-out manifest for Grafana alerting Slack webhook (`manifests/external-secrets/grafana-alerting-secret.yaml`)
 - Grafana alerting values file with pod crashloop, pod not-ready, and restart-spike rules (`values/grafana/alerting.yaml`)
