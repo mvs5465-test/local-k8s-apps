@@ -8,6 +8,8 @@ data:
     import json
     import os
     import random
+    from datetime import datetime, timedelta, timezone
+    from zoneinfo import ZoneInfo
     import urllib.parse
     import urllib.request
 
@@ -15,20 +17,18 @@ data:
     PROM_URL = os.getenv("PROM_URL", "http://prometheus-server.monitoring.svc.cluster.local")
     SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", "")
     TIMEOUT_SECONDS = 10
+    ET = ZoneInfo("America/New_York")
+    SPARK_CHARS = "▁▂▃▄▅▆▇█"
 
 
-    def prom_query(expr):
+    def prom_instant(expr):
       params = urllib.parse.urlencode({"query": expr})
       url = f"{PROM_URL}/api/v1/query?{params}"
       with urllib.request.urlopen(url, timeout=TIMEOUT_SECONDS) as resp:
         payload = json.loads(resp.read().decode("utf-8"))
       if payload.get("status") != "success":
         raise RuntimeError(f"prometheus query failed: {expr}")
-      result = payload.get("data", {}).get("result", [])
-      if not result:
-        return 0.0
-      value = result[0].get("value", [None, "0"])[1]
-      return float(value)
+      return payload.get("data", {}).get("result", [])
 
 
     def prom_query_first(exprs):
@@ -37,6 +37,51 @@ data:
         if value > 0:
           return value
       return 0.0
+
+
+    def prom_query(expr):
+      result = prom_instant(expr)
+      if not result:
+        return 0.0
+      value = result[0].get("value", [None, "0"])[1]
+      return float(value)
+
+
+    def prom_top(expr):
+      result = prom_instant(expr)
+      if not result:
+        return {}, 0.0
+      top = result[0]
+      labels = top.get("metric", {})
+      value = float(top.get("value", [None, "0"])[1])
+      return labels, value
+
+
+    def prom_query_range(expr, start, end, step_seconds):
+      params = urllib.parse.urlencode({
+        "query": expr,
+        "start": f"{start.timestamp():.0f}",
+        "end": f"{end.timestamp():.0f}",
+        "step": str(step_seconds),
+      })
+      url = f"{PROM_URL}/api/v1/query_range?{params}"
+      with urllib.request.urlopen(url, timeout=TIMEOUT_SECONDS) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
+      if payload.get("status") != "success":
+        raise RuntimeError(f"prometheus range query failed: {expr}")
+      result = payload.get("data", {}).get("result", [])
+      if not result:
+        return []
+      points = result[0].get("values", [])
+      return [float(v[1]) for v in points]
+
+
+    def prom_query_range_first(exprs, start, end, step_seconds):
+      for expr in exprs:
+        values = prom_query_range(expr, start, end, step_seconds)
+        if any(v > 0 for v in values):
+          return values
+      return []
 
 
     def format_bytes(num_bytes):
@@ -59,10 +104,41 @@ data:
       return f"{value:.2f}"
 
 
-    def post_to_slack(text):
+    def fmt_delta(value, unit=""):
+      sign = "+" if value > 0 else ""
+      if unit == "bytes":
+        absv = abs(value)
+        text = format_bytes(absv)
+        return f"{sign}{text}" if value >= 0 else f"-{text}"
+      return f"{sign}{fmt_num(value)}{unit}"
+
+
+    def sparkline(values):
+      if not values:
+        return "n/a"
+      lo = min(values)
+      hi = max(values)
+      if hi - lo < 1e-9:
+        return "▅" * len(values)
+      chars = []
+      for value in values:
+        idx = int((value - lo) / (hi - lo) * (len(SPARK_CHARS) - 1))
+        chars.append(SPARK_CHARS[max(0, min(idx, len(SPARK_CHARS) - 1))])
+      return "".join(chars)
+
+
+    def trend_arrow(delta, epsilon):
+      if delta > epsilon:
+        return "↗"
+      if delta < -epsilon:
+        return "↘"
+      return "→"
+
+
+    def post_to_slack(payload):
       if not SLACK_WEBHOOK_URL:
         raise RuntimeError("SLACK_WEBHOOK_URL is not set")
-      body = json.dumps({"text": text}).encode("utf-8")
+      body = json.dumps(payload).encode("utf-8")
       req = urllib.request.Request(
         SLACK_WEBHOOK_URL,
         data=body,
@@ -75,6 +151,11 @@ data:
 
 
     def main():
+      now_utc = datetime.now(timezone.utc)
+      now_et = now_utc.astimezone(ET)
+      range_start = now_utc - timedelta(minutes=30)
+      range_end = now_utc
+
       pods_running = prom_query('sum(kube_pod_status_phase{phase="Running"})')
       pods_total = prom_query('sum(kube_pod_status_phase{phase=~"Pending|Running|Unknown|Failed"})')
 
@@ -101,10 +182,23 @@ data:
 
       if crashloop > 0 or image_pull > 0 or pod_ratio < 0.95 or argo_ratio < 0.90:
         health = "experiencing significant issues"
+        health_emoji = ":rotating_light:"
+        sidebar_color = "#d50200"
       elif pod_ratio < 0.99 or argo_ratio < 1.0:
         health = "partially degraded"
+        health_emoji = ":warning:"
+        sidebar_color = "#f2c037"
       else:
         health = "fully healthy"
+        health_emoji = ":sparkles:"
+        sidebar_color = "#2eb67d"
+
+      mood_table = {
+        "fully healthy": [":sun_with_face: caffeinated raccoon", ":dancer: disco walrus", ":rocket: tiny mission control"],
+        "partially degraded": [":construction: duct-tape astronaut", ":thinking_face: mildly concerned otter", ":wrench: squeaky but steady bot"],
+        "experiencing significant issues": [":fire: smoke-alarm gremlin", ":ambulance: triage squad on deck", ":shield: all-hands repair mode"],
+      }
+      mood_badge = random.choice(mood_table[health])
 
       opener = random.choice([
         "Hello from the cluster clubhouse",
@@ -114,14 +208,99 @@ data:
         "Cosmic control room check-in",
       ])
 
-      message = (
+      pod_series = prom_query_range('sum(kube_pod_status_phase{phase="Running"})', range_start, range_end, 300)
+      cpu_series = prom_query_range_first([
+        'sum(rate(node_cpu_seconds_total{mode!="idle"}[5m]))',
+        'sum(rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m]))',
+      ], range_start, range_end, 300)
+      mem_series = prom_query_range_first([
+        "sum(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)",
+        'sum(container_memory_working_set_bytes{container!="",container!="POD"})',
+      ], range_start, range_end, 300)
+
+      pod_delta = (pod_series[-1] - pod_series[0]) if len(pod_series) >= 2 else 0.0
+      cpu_delta = (cpu_series[-1] - cpu_series[0]) if len(cpu_series) >= 2 else 0.0
+      mem_delta = (mem_series[-1] - mem_series[0]) if len(mem_series) >= 2 else 0.0
+
+      ns_labels, ns_value = prom_top('topk(1, sum by (namespace) (rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m])))')
+      noisiest_ns = ns_labels.get("namespace", "unknown")
+      pod_labels, pod_restart_value = prom_top('topk(1, sum by (namespace,pod) (increase(kube_pod_container_status_restarts_total[24h])))')
+      top_pod_ns = pod_labels.get("namespace", "unknown")
+      top_pod_name = pod_labels.get("pod", "unknown")
+
+      healthy_24h = (
+        prom_query('sum(max_over_time(kube_pod_container_status_waiting_reason{reason="CrashLoopBackOff",namespace!="kube-system"}[24h]))') == 0
+        and prom_query('sum(max_over_time(kube_pod_container_status_waiting_reason{reason=~"ErrImagePull|ImagePullBackOff",namespace!="kube-system"}[24h]))') == 0
+        and prom_query('min_over_time((sum(kube_pod_status_phase{phase="Running"}) / clamp_min(sum(kube_pod_status_phase{phase=~"Pending|Running|Unknown|Failed"}), 1))[24h:5m])') >= 0.99
+        and prom_query('min_over_time((count(argocd_app_info{sync_status="Synced"}) / clamp_min(count(argocd_app_info), 1))[24h:5m])') >= 1.0
+      )
+
+      celebration_line = ""
+      if healthy_24h and now_et.hour == 9 and now_et.minute < 15:
+        celebration_line = ":trophy: *24h perfect-health streak unlocked.*"
+
+      weekly_section = ""
+      if now_et.weekday() == 6 and now_et.hour == 9 and now_et.minute < 15:
+        restart_7d = prom_query("sum(increase(kube_pod_container_status_restarts_total[7d]))")
+        max_unsynced_7d = prom_query('max_over_time((count(argocd_app_info{sync_status!="Synced"}) or vector(0))[7d:5m])')
+        max_cpu_7d = prom_query('max_over_time((sum(rate(node_cpu_seconds_total{mode!="idle"}[5m])))[7d:30m])')
+        weekly_section = (
+          "\n*Weekly personality report*\n"
+          f"- restarts (7d): *{int(round(restart_7d))}*\n"
+          f"- peak unsynced apps (7d): *{int(round(max_unsynced_7d))}*\n"
+          f"- peak CPU used (7d): *{fmt_num(max_cpu_7d)}vCPU*"
+        )
+
+      fallback_text = (
         f"{opener}. We are {health}. Cluster metrics:\n"
         f"{int(round(pods_running))}/{int(round(pods_total))} pods running\n"
         f"{int(round(argo_synced))}/{int(round(argo_total))} apps synced\n"
-        f"{fmt_num(cpu_used)}/{fmt_num(cpu_total)}vCPU, {format_bytes(mem_used)}/{format_bytes(mem_total)}"
+        f"{fmt_num(cpu_used)}/{fmt_num(cpu_total)}vCPU, {format_bytes(mem_used)}/{format_bytes(mem_total)}\n"
+        f"mood: {mood_badge}"
       )
 
-      post_to_slack(message)
+      trend_line = (
+        f":chart_with_upwards_trend: *30m trend* "
+        f"pods {trend_arrow(pod_delta, 0.5)} {fmt_delta(pod_delta)}, "
+        f"cpu {trend_arrow(cpu_delta, 0.05)} {fmt_delta(cpu_delta, 'vCPU')}, "
+        f"mem {trend_arrow(mem_delta, 20 * 1024 * 1024)} {fmt_delta(mem_delta, 'bytes')}"
+      )
+      spark_line = (
+        f":bar_chart: *Sparklines* cpu `{sparkline(cpu_series)}`  mem `{sparkline(mem_series)}`"
+      )
+      talker_line = (
+        f":loudspeaker: *Top talkers* noisiest ns: *{noisiest_ns}* ({fmt_num(ns_value)}vCPU), "
+        f"most restarts (24h): *{top_pod_ns}/{top_pod_name}* ({int(round(pod_restart_value))})"
+      )
+
+      sections = [
+        f"{opener}.",
+        f"{health_emoji} *We are {health}.* _Cluster metrics:_",
+        f"*{int(round(pods_running))}/{int(round(pods_total))}* pods running",
+        f"*{int(round(argo_synced))}/{int(round(argo_total))}* apps synced",
+        f"*{fmt_num(cpu_used)}/{fmt_num(cpu_total)}vCPU*, *{format_bytes(mem_used)}/{format_bytes(mem_total)}*",
+        f":label: *Cluster mood:* _{mood_badge}_",
+        trend_line,
+        spark_line,
+        talker_line,
+      ]
+      if celebration_line:
+        sections.append(celebration_line)
+      if weekly_section:
+        sections.append(weekly_section)
+
+      payload = {
+        "text": fallback_text,
+        "attachments": [
+          {
+            "color": sidebar_color,
+            "mrkdwn_in": ["text"],
+            "text": "\n".join(sections),
+          }
+        ],
+      }
+
+      post_to_slack(payload)
 
 
     if __name__ == "__main__":

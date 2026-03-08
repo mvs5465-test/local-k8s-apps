@@ -23,6 +23,7 @@
 - k8s-monitoring now exposes OTLP receivers and forwards application traces to Tempo
 - github-pr-slack-notifier now deploys to its own namespace (`github-pr-slack-notifier`) with matching ESO secret fan-out
 - Grafana canary heartbeat alert is removed in favor of the dedicated CronJob status reporter message
+- Cluster health reporter heartbeat now includes styled Slack payloads, trend arrows, sparklines, mood badges, top talkers, and periodic celebration/personality callouts
 
 ### Fixed
 - Grafana alert contact point now uses native Slack notifier payload formatting to avoid incoming webhook HTTP 400 payload mismatch errors
