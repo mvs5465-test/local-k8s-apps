@@ -16,7 +16,7 @@ jobs:
         run: pip install yamllint
 
       - name: Lint YAML
-        run: yamllint -d relaxed apps/ values/ manifests/
+        run: yamllint -s -c .yamllint .github/ apps/ values/ manifests/
 
   validate-manifests:
     runs-on: ubuntu-latest
