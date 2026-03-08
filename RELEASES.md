@@ -24,6 +24,7 @@
 - github-pr-slack-notifier now deploys to its own namespace (`github-pr-slack-notifier`) with matching ESO secret fan-out
 
 ### Fixed
+- Grafana alert contact point now uses native Slack notifier payload formatting to avoid incoming webhook HTTP 400 payload mismatch errors
 - k8s-monitoring now writes pod logs to the Loki service on port 3100 so log ingestion succeeds again
 - Mimir now uses single-node replication settings that match the local one-replica topology
 - Prometheus no longer defines a duplicate self-scrape job after the chart upgrade, which fixes the server crash loop
