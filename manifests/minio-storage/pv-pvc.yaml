@@ -11,6 +11,7 @@ spec:
   storageClassName: ""
   hostPath:
     path: /Users/matthewschwartz/clusterstorage/velero
+    type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
