@@ -10,6 +10,10 @@ spec:
       targetRevision: HEAD
       ref: values
 
+    - repoURL: https://github.com/mvs5465-test/local-k8s-apps
+      targetRevision: HEAD
+      path: manifests/minio-storage
+
     - repoURL: https://charts.min.io
       targetRevision: 5.4.0
       chart: minio

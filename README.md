@@ -7,7 +7,8 @@ ArgoCD `Application` definitions grouped by sync wave. Pair with [`local-k8s-arg
 Data is stored under `~/clusterstorage/` with the following structure:
 ```
 ~/clusterstorage/
-└── files/              ← Jellyfin media files (nginx file server)
+├── files/              ← Jellyfin media files (nginx file server)
+└── velero/             ← MinIO object storage backing for Velero backups
 ```
 
 See `local-k8s-argocd` README for Colima mount configuration.

@@ -33,7 +33,7 @@ resources:
 metrics:
   enabled: true
   serviceMonitor:
-    enabled: true
+    enabled: false
 
 schedules:
   cluster-core-30m:

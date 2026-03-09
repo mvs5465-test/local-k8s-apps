@@ -6,7 +6,7 @@ existingSecret: minio-root-credentials
 
 persistence:
   enabled: true
-  size: 100Gi
+  existingClaim: minio-storage
 
 resources:
   requests:
