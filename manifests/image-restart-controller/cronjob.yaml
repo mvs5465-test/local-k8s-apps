@@ -94,20 +94,43 @@ data:
         return f.read().strip()
 
 
-    def load_ghcr_auth_header():
+    def load_ghcr_credentials():
       with open(GHCR_DOCKERCFG_PATH, "r", encoding="utf-8") as f:
         cfg = json.loads(f.read())
       auths = cfg.get("auths", {})
       ghcr = auths.get("ghcr.io", {})
       auth = ghcr.get("auth")
       if auth:
-        return f"Basic {auth}"
+        decoded = base64.b64decode(auth).decode("utf-8")
+        username, password = decoded.split(":", 1)
+        return username, password
       username = ghcr.get("username")
       password = ghcr.get("password")
       if not username or not password:
         raise RuntimeError("ghcr credentials not found in dockerconfigjson")
-      token = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8")
-      return f"Basic {token}"
+      return username, password
+
+
+    def ghcr_bearer_token(repo, username, password):
+      basic = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8")
+      params = urllib.parse.urlencode({
+        "service": "ghcr.io",
+        "scope": f"repository:{repo}:pull",
+      })
+      url = f"https://ghcr.io/token?{params}"
+      req = urllib.request.Request(
+        url,
+        headers={
+          "Authorization": f"Basic {basic}",
+          "Accept": "application/json",
+        },
+      )
+      with urllib.request.urlopen(req, timeout=15) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
+      token = payload.get("token") or payload.get("access_token")
+      if not token:
+        raise RuntimeError(f"token exchange failed for {repo}")
+      return token
 
 
     def kube_request(serviceaccount_token, path, method="GET", payload=None):
@@ -135,12 +158,12 @@ data:
       return parts[0], parts[1]
 
 
-    def fetch_manifest(repo, reference, auth_header, accept_header):
+    def fetch_manifest(repo, reference, bearer_token, accept_header):
       url = f"https://ghcr.io/v2/{repo}/manifests/{reference}"
       req = urllib.request.Request(
         url,
         headers={
-          "Authorization": auth_header,
+          "Authorization": f"Bearer {bearer_token}",
           "Accept": accept_header,
         },
       )
@@ -151,16 +174,17 @@ data:
       return payload, digest
 
 
-    def latest_digest_for_arch(image, arch, ghcr_auth_header):
+    def latest_digest_for_arch(image, arch, ghcr_username, ghcr_password):
       repo_with_host, tag = parse_image_ref(image)
       if not repo_with_host.startswith("ghcr.io/"):
         raise RuntimeError(f"only ghcr.io images are supported: {image}")
       repo = repo_with_host[len("ghcr.io/"):]
+      bearer_token = ghcr_bearer_token(repo, ghcr_username, ghcr_password)
 
       index_payload, index_digest = fetch_manifest(
         repo,
         tag,
-        ghcr_auth_header,
+        bearer_token,
         ", ".join([
           "application/vnd.oci.image.index.v1+json",
           "application/vnd.docker.distribution.manifest.list.v2+json",
@@ -257,7 +281,7 @@ data:
     def main():
       failures = 0
       serviceaccount_token = load_token()
-      ghcr_auth_header = load_ghcr_auth_header()
+      ghcr_username, ghcr_password = load_ghcr_credentials()
       for item in WATCH_ITEMS:
         ns = item["namespace"]
         deploy_name = item["deployment"]
@@ -282,7 +306,7 @@ data:
             continue
 
           arch = node_arch(serviceaccount_token, pod.get("spec", {}).get("nodeName", ""))
-          latest_digest = latest_digest_for_arch(image, arch, ghcr_auth_header)
+          latest_digest = latest_digest_for_arch(image, arch, ghcr_username, ghcr_password)
           if latest_digest == running_digest:
             print(f"[ok]   {target} digest unchanged ({running_digest})")
             continue
