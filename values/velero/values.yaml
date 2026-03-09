@@ -1,0 +1,64 @@
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.13.1
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+credentials:
+  useSecret: true
+  existingSecret: velero-credentials
+
+configuration:
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: velero
+      default: true
+      config:
+        region: minio
+        s3ForcePathStyle: "true"
+        s3Url: http://minio.backups.svc.cluster.local:9000
+  volumeSnapshotLocation: []
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+
+schedules:
+  cluster-core-30m:
+    schedule: "*/30 * * * *"
+    template:
+      ttl: 336h
+      includedNamespaces:
+        - argocd
+        - monitoring
+        - services
+        - external-secrets
+      snapshotVolumes: false
+
+  cluster-core-daily:
+    schedule: "0 4 * * *"
+    template:
+      ttl: 720h
+      includedNamespaces:
+        - argocd
+        - monitoring
+        - services
+        - external-secrets
+      includedClusterScopedResources:
+        - namespaces
+        - customresourcedefinitions.apiextensions.k8s.io
+        - clusterroles.rbac.authorization.k8s.io
+        - clusterrolebindings.rbac.authorization.k8s.io
+      snapshotVolumes: false

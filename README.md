@@ -41,7 +41,9 @@ See `local-k8s-argocd` README for Colima mount configuration.
 | 📊 **Gatus** | Uptime monitoring & status page | [gatus-app.yaml](apps/wave-2/gatus-app.yaml) |
 | 🎬 **Jellyfin** | Media server | [jellyfin-app.yaml](apps/wave-2/jellyfin-app.yaml) |
 | 🪵 **Loki MCP** | Loki MCP bridge service | [loki-mcp-app.yaml](apps/wave-2/loki-mcp-app.yaml) |
+| 💾 **MinIO** | S3-compatible backup object store for DR workflows | [minio-app.yaml](apps/wave-2/minio-app.yaml) |
 | 📈 **Prometheus MCP** | Prometheus MCP bridge service | [prometheus-mcp-app.yaml](apps/wave-2/prometheus-mcp-app.yaml) |
+| 🛟 **Velero** | Backup/restore controller and DR schedule engine | [velero-app.yaml](apps/wave-2/velero-app.yaml) |
 
 ## Adding Apps
 
