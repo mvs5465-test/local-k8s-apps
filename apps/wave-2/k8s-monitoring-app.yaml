@@ -28,5 +28,6 @@ spec:
     - ServerSideApply=true
     - SkipDryRunOnMissingResource=true
     automated:
+      enabled: true
       prune: true
       selfHeal: true
