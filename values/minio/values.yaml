@@ -1,0 +1,23 @@
+mode: standalone
+replicas: 1
+drivesPerNode: 1
+
+existingSecret: minio-root-credentials
+
+persistence:
+  enabled: true
+  existingClaim: minio-storage
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+
+consoleService:
+  type: ClusterIP

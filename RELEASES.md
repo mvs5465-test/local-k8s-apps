@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Backlog
+- [Deferred] DR foundation rollout (MinIO + Velero apps, host-backed MinIO PV/PVC, ESO credential fan-out) is parked in draft PR [#200](https://github.com/mvs5465-test/local-k8s-apps/pull/200) for later activation.
+
 ### Removed
 - Outline application, host-mounted dependencies, and related dashboard/health-check references
 - Homepage application and its Gatus health check
