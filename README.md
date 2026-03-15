@@ -66,5 +66,6 @@ See `local-k8s-argocd` README for Colima mount configuration.
 ## Development
 
 Create feature branches to test changes. ArgoCD watches main, so changes sync automatically after merge.
+For intentionally low-risk test PRs, prefer docs-only edits in existing files.
 
 See `CLAUDE.md` for development guidelines.
