@@ -67,4 +67,6 @@ See `local-k8s-argocd` README for Colima mount configuration.
 
 Create feature branches to test changes. ArgoCD watches main, so changes sync automatically after merge.
 
+For a minimal PR smoke test, a README-only change like this one is a safe way to verify the branch, push, and PR workflow end to end.
+
 See `CLAUDE.md` for development guidelines.
