@@ -86,12 +86,6 @@ spec:
               conditions:
                 - "[STATUS] == 200"
 
-            - name: jellyfin
-              url: http://jellyfin.services.svc.cluster.local:8096/health
-              interval: 60s
-              conditions:
-                - "[STATUS] == 200"
-
             - name: cluster-home
               url: http://cluster-home.services.svc.cluster.local/
               interval: 60s
@@ -104,12 +98,6 @@ spec:
               conditions:
                 - "[STATUS] >= 200"
                 - "[STATUS] < 400"
-
-            - name: cluster-query-router
-              url: http://cluster-query-router.ai.svc.cluster.local:8080/
-              interval: 60s
-              conditions:
-                - "[STATUS] == 200"
 
   destination:
     server: https://kubernetes.default.svc

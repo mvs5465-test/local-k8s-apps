@@ -62,27 +62,10 @@ spec:
                   "name": "Apps",
                   "items": [
                     {
-                      "name": "Jellyfin",
-                      "icon": "JF",
-                      "url": "http://jellyfin.lan",
-                      "description": "Media library and streaming."
-                    },
-                    {
                       "name": "Wiki",
                       "icon": "WK",
                       "url": "http://wiki.lan",
                       "description": "Lightweight in-browser notes and runbooks."
-                    }
-                  ]
-                },
-                {
-                  "name": "Tools",
-                  "items": [
-                    {
-                      "name": "Cluster Info",
-                      "icon": "CI",
-                      "url": "http://info.lan",
-                      "description": "Query and routing tools for cluster context."
                     }
                   ]
                 }

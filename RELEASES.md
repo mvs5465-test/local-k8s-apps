@@ -7,9 +7,11 @@
 - Homepage application and its Gatus health check
 - Ollama MCP bridge application, external Ollama proxy app, and supporting manifests
 - Chat application and its homepage/status references
+- Cluster-query-router, cluster-health-reporter, image-restart-controller, jellyfin, loki-mcp, and prometheus-mcp from the active ArgoCD wave set, plus their stale cluster-home and Gatus references
 
 ### Changed
 - App manifests are now grouped by ArgoCD sync wave (`apps/wave-0`, `apps/wave-1`, `apps/wave-2`) instead of `apps/system` and `apps/services`
+- App manifests can now be disabled without deletion by moving them into `apps/disabled/`
 - Cluster-query-router now connects directly to the in-cluster Ollama service
 - Grafana now provisions the dotdc community Kubernetes dashboards in a dedicated folder
 - Grafana now provisions baseline Kubernetes alert rules and a default notification policy from Git
