@@ -10,6 +10,7 @@
 - Cluster-query-router, cluster-health-reporter, image-restart-controller, jellyfin, loki-mcp, and prometheus-mcp from the active ArgoCD wave set, plus their stale cluster-home and Gatus references
 
 ### Changed
+- Tempo memory request/limit now track 384Mi/1Gi so the local tracing pod has more headroom during WAL replay and startup
 - App manifests are now grouped by ArgoCD sync wave (`apps/wave-0`, `apps/wave-1`, `apps/wave-2`) instead of `apps/system` and `apps/services`
 - App manifests can now be disabled without deletion by moving them into `apps/disabled/`
 - Cluster-query-router now connects directly to the in-cluster Ollama service
