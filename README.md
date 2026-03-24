@@ -42,6 +42,7 @@ No standalone bootstrap applications are currently managed from this directory. 
 | 🌌 **Cluster Home** | Custom dark-themed service dashboard | [cluster-home-app.yaml](apps/cluster-wave-2/cluster-home-app.yaml) |
 | 📚 **Cluster Lite Wiki** | Seeded local cluster documentation | [cluster-lite-wiki-app.yaml](apps/cluster-wave-2/cluster-lite-wiki-app.yaml) |
 | 📊 **Gatus** | Uptime monitoring & status page | [gatus-app.yaml](apps/cluster-wave-2/gatus-app.yaml) |
+| 🎬 **Jellyfin** | Media server | [jellyfin-app.yaml](apps/cluster-wave-2/jellyfin-app.yaml) |
 | 🔔 **GitHub PR Slack Notifier** | Slack notifications for GitHub PR activity | [github-pr-slack-notifier-app.yaml](apps/cluster-wave-2/github-pr-slack-notifier-app.yaml) |
 
 ### Disabled
@@ -50,7 +51,6 @@ No standalone bootstrap applications are currently managed from this directory. 
 | 🩺 **Cluster Health Reporter** | Slack heartbeat with interpreted cluster health summary every 30 minutes | [cluster-health-reporter-app.yaml](apps/disabled/cluster-health-reporter-app.yaml) |
 | 🔎 **Cluster Query Router** | In-cluster query entrypoint | [cluster-query-router-app.yaml](apps/disabled/cluster-query-router-app.yaml) |
 | 🔁 **Image Restart Controller** | Cron-based rollout restarts for image refresh workflows | [image-restart-controller-app.yaml](apps/disabled/image-restart-controller-app.yaml) |
-| 🎬 **Jellyfin** | Media server | [jellyfin-app.yaml](apps/disabled/jellyfin-app.yaml) |
 | 🪵 **Loki MCP** | Loki MCP bridge service | [loki-mcp-app.yaml](apps/disabled/loki-mcp-app.yaml) |
 | 📈 **Prometheus MCP** | Prometheus MCP bridge service | [prometheus-mcp-app.yaml](apps/disabled/prometheus-mcp-app.yaml) |
 

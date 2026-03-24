@@ -62,6 +62,12 @@ spec:
                   "name": "Apps",
                   "items": [
                     {
+                      "name": "Jellyfin",
+                      "icon": "JF",
+                      "url": "http://jellyfin.lan",
+                      "description": "Media library and streaming."
+                    },
+                    {
                       "name": "Wiki",
                       "icon": "WK",
                       "url": "http://wiki.lan",

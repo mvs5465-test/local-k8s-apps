@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Jellyfin is back in the active ArgoCD wave set with Traefik ingress, Cluster Home navigation, and Gatus health monitoring restored
+
 ### Removed
 - Outline application, host-mounted dependencies, and related dashboard/health-check references
 - Homepage application and its Gatus health check
