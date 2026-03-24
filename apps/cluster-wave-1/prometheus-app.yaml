@@ -28,7 +28,7 @@ spec:
             type: ClusterIP
           ingress:
             enabled: true
-            ingressClassName: nginx
+            ingressClassName: traefik
             hosts:
               - prometheus.lan
             path: /

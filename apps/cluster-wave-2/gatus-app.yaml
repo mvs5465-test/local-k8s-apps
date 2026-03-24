@@ -30,7 +30,7 @@ spec:
 
         ingress:
           enabled: true
-          ingressClassName: nginx
+          ingressClassName: traefik
           path: /
           pathType: Prefix
           hosts:

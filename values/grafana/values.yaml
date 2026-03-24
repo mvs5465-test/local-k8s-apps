@@ -27,7 +27,7 @@ service:
 
 ingress:
   enabled: true
-  ingressClassName: nginx
+  ingressClassName: traefik
   hosts:
     - grafana.lan
   path: /
