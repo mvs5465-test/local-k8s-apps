@@ -17,9 +17,8 @@ See `local-k8s-argocd` README for Colima mount configuration.
 ## Apps Included
 
 ### Bootstrap Wave 0
-| | | |
-|---|---|---|
-| 🌐 **Nginx Ingress** | External traffic routing | [nginx-ingress-app.yaml](apps/bootstrap-wave-0/nginx-ingress-app.yaml) |
+
+No standalone bootstrap applications are currently managed from this directory. The cluster uses the built-in k3s Traefik controller for external ingress.
 
 ### Bootstrap Wave 1
 | | | |
