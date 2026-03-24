@@ -28,7 +28,7 @@ spec:
         volumes:
           - name: tmp-files
             hostPath:
-              path: /Users/matthewschwartz/clusterstorage/files
+              path: /srv/media/jellyfin
               type: DirectoryOrCreate
 
         volumeMounts:
