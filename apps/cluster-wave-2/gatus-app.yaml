@@ -86,6 +86,12 @@ spec:
               conditions:
                 - "[STATUS] == 200"
 
+            - name: jellyfin
+              url: http://jellyfin.services.svc.cluster.local:8096/health
+              interval: 60s
+              conditions:
+                - "[STATUS] == 200"
+
             - name: cluster-home
               url: http://cluster-home.services.svc.cluster.local/
               interval: 60s
