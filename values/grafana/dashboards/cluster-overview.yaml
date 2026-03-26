@@ -571,7 +571,20 @@ dashboards:
                   },
                   "unit": "celsius"
                 },
-                "overrides": []
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byRegexp",
+                      "options": ".* \\(F\\)$"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "fahrenheit"
+                      }
+                    ]
+                  }
+                ]
               },
               "gridPos": {
                 "h": 8,
@@ -598,15 +611,29 @@ dashboards:
                   "expr": "max by (instance, label) (node_hwmon_temp_celsius{job=\"integrations/node_exporter\"} * on (instance, chip, sensor) group_left(label) node_hwmon_sensor_label{job=\"integrations/node_exporter\"})",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "{{label}}",
+                  "legendFormat": "{{label}} (C)",
                   "refId": "A"
                 },
                 {
                   "expr": "label_replace(node_thermal_zone_temp{job=\"integrations/node_exporter\"}, \"label\", \"acpi zone $1\", \"zone\", \"(.*)\")",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "{{label}}",
+                  "legendFormat": "{{label}} (C)",
                   "refId": "B"
+                },
+                {
+                  "expr": "max by (instance, label) ((node_hwmon_temp_celsius{job=\"integrations/node_exporter\"} * 9 / 5 + 32) * on (instance, chip, sensor) group_left(label) node_hwmon_sensor_label{job=\"integrations/node_exporter\"})",
+                  "format": "time_series",
+                  "interval": "",
+                  "legendFormat": "{{label}} (F)",
+                  "refId": "C"
+                },
+                {
+                  "expr": "label_replace(node_thermal_zone_temp{job=\"integrations/node_exporter\"} * 9 / 5 + 32, \"label\", \"acpi zone $1 (F)\", \"zone\", \"(.*)\")",
+                  "format": "time_series",
+                  "interval": "",
+                  "legendFormat": "{{label}}",
+                  "refId": "D"
                 }
               ],
               "title": "Node Temperatures",
