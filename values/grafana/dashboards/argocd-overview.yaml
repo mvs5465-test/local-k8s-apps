@@ -125,7 +125,7 @@ dashboards:
                 },
                 "overrides": []
               },
-              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
               "id": 6,
               "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
               "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "histogram_quantile(0.95, sum(rate(argocd_app_reconcile_bucket[5m])) by (le, namespace))", "legendFormat": "p95 {{namespace}}", "refId": "A" }],
@@ -148,7 +148,7 @@ dashboards:
                   { "matcher": { "id": "byName", "options": "Error" }, "properties": [{ "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } }] }
                 ]
               },
-              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+              "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
               "id": 10,
               "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
               "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(increase(argocd_app_sync_total[5m])) by (phase)", "legendFormat": "{{phase}}", "refId": "A" }],
