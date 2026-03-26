@@ -24,6 +24,13 @@ destinations:
 
 clusterMetrics:
   enabled: true
+  node-exporter:
+    metricsTuning:
+      includeMetrics:
+        - node_hwmon_chip_names
+        - node_hwmon_sensor_label
+        - node_hwmon_temp_celsius
+        - node_thermal_zone_temp
 
 clusterEvents:
   enabled: true
