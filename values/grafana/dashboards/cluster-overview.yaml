@@ -494,21 +494,122 @@ dashboards:
               "pluginVersion": "10.0.0",
               "targets": [
                 {
-                  "expr": "rate(node_network_receive_bytes_total{device=\"eth0\"}[5m])",
+                  "expr": "sum by (instance) (rate(node_network_receive_bytes_total{job=\"integrations/node_exporter\",device!~\"lo|cni.*|flannel.*|veth.*|docker.*|br-.*|virbr.*|kube-ipvs0|tunl.*\"}[5m]))",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "RX",
+                  "legendFormat": "RX {{instance}}",
                   "refId": "A"
                 },
                 {
-                  "expr": "rate(node_network_transmit_bytes_total{device=\"eth0\"}[5m])",
+                  "expr": "sum by (instance) (rate(node_network_transmit_bytes_total{job=\"integrations/node_exporter\",device!~\"lo|cni.*|flannel.*|veth.*|docker.*|br-.*|virbr.*|kube-ipvs0|tunl.*\"}[5m]))",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "TX",
+                  "legendFormat": "TX {{instance}}",
                   "refId": "B"
                 }
               ],
               "title": "Node Network I/O",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "Temperature",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "tooltip": false,
+                      "viz": false,
+                      "legend": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 60
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "celsius"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 24
+              },
+              "id": 8,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "10.0.0",
+              "targets": [
+                {
+                  "expr": "max by (instance, label) (node_hwmon_temp_celsius{job=\"integrations/node_exporter\"} * on (instance, chip, sensor) group_left(label) node_hwmon_sensor_label{job=\"integrations/node_exporter\"})",
+                  "format": "time_series",
+                  "interval": "",
+                  "legendFormat": "{{label}}",
+                  "refId": "A"
+                },
+                {
+                  "expr": "label_replace(node_thermal_zone_temp{job=\"integrations/node_exporter\"}, \"label\", \"acpi zone $1\", \"zone\", \"(.*)\")",
+                  "format": "time_series",
+                  "interval": "",
+                  "legendFormat": "{{label}}",
+                  "refId": "B"
+                }
+              ],
+              "title": "Node Temperatures",
               "type": "timeseries"
             }
           ],
