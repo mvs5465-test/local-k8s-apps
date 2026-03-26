@@ -408,14 +408,14 @@ dashboards:
               "pluginVersion": "10.0.0",
               "targets": [
                 {
-                  "expr": "increase(kube_pod_container_status_restarts_total[1h])",
+                  "expr": "increase(kube_pod_container_status_restarts_total[5m])",
                   "format": "time_series",
                   "interval": "",
                   "legendFormat": "{{pod}} ({{namespace}})",
                   "refId": "A"
                 }
               ],
-              "title": "Pod Restarts (1h)",
+              "title": "Pod Restarts (5m)",
               "type": "timeseries"
             },
             {
