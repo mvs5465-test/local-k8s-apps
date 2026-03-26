@@ -388,7 +388,7 @@ dashboards:
               },
               "gridPos": {
                 "h": 8,
-                "w": 12,
+                "w": 8,
                 "x": 0,
                 "y": 16
               },
@@ -417,6 +417,73 @@ dashboards:
               ],
               "title": "Pod Restarts (5m)",
               "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "mappings": [],
+                  "thresholds": {
+                    "base": {
+                      "color": "green",
+                      "value": null
+                    },
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 1
+                      },
+                      {
+                        "color": "red",
+                        "value": 3
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 4,
+                "x": 8,
+                "y": 16
+              },
+              "id": 9,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "values": false,
+                  "fields": "",
+                  "calcs": [
+                    "lastNotNull"
+                  ]
+                },
+                "text": {},
+                "textMode": "auto"
+              },
+              "pluginVersion": "10.0.0",
+              "targets": [
+                {
+                  "expr": "sum(increase(kube_pod_container_status_restarts_total[5m])) or vector(0)",
+                  "format": "time_series",
+                  "interval": "",
+                  "legendFormat": "Restarts",
+                  "refId": "A"
+                }
+              ],
+              "title": "Restarts (5m)",
+              "type": "stat"
             },
             {
               "datasource": {
