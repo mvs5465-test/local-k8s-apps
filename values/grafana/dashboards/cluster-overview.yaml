@@ -388,9 +388,9 @@ dashboards:
               },
               "gridPos": {
                 "h": 8,
-                "w": 8,
+                "w": 12,
                 "x": 0,
-                "y": 16
+                "y": 24
               },
               "id": 6,
               "options": {
@@ -425,12 +425,42 @@ dashboards:
               },
               "fieldConfig": {
                 "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "Percent",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "tooltip": false,
+                      "viz": false,
+                      "legend": false
+                    },
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
                   "mappings": [],
                   "thresholds": {
-                    "base": {
-                      "color": "green",
-                      "value": null
-                    },
+                    "mode": "absolute",
                     "steps": [
                       {
                         "color": "green",
@@ -438,52 +468,49 @@ dashboards:
                       },
                       {
                         "color": "yellow",
-                        "value": 1
+                        "value": 70
                       },
                       {
                         "color": "red",
-                        "value": 3
+                        "value": 85
                       }
                     ]
                   },
-                  "unit": "short"
+                  "unit": "percent"
                 },
                 "overrides": []
               },
               "gridPos": {
                 "h": 8,
-                "w": 4,
-                "x": 8,
+                "w": 12,
+                "x": 0,
                 "y": 16
               },
-              "id": 9,
+              "id": 10,
               "options": {
-                "colorMode": "background",
-                "graphMode": "none",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "reduceOptions": {
-                  "values": false,
-                  "fields": "",
-                  "calcs": [
-                    "lastNotNull"
-                  ]
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
                 },
-                "text": {},
-                "textMode": "auto"
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
               },
               "pluginVersion": "10.0.0",
               "targets": [
                 {
-                  "expr": "sum(increase(kube_pod_container_status_restarts_total[5m])) or vector(0)",
+                  "expr": "100 * (1 - (node_filesystem_avail_bytes{job=\"integrations/node_exporter\",mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs|nsfs\"} / node_filesystem_size_bytes{job=\"integrations/node_exporter\",mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs|nsfs\"}))",
                   "format": "time_series",
                   "interval": "",
-                  "legendFormat": "Restarts",
+                  "legendFormat": "{{instance}} /",
                   "refId": "A"
                 }
               ],
-              "title": "Restarts (5m)",
-              "type": "stat"
+              "title": "Node Disk Usage",
+              "type": "timeseries"
             },
             {
               "datasource": {
@@ -591,100 +618,6 @@ dashboards:
                   "custom": {
                     "axisCenteredZero": false,
                     "axisColorMode": "text",
-                    "axisLabel": "Percent",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "drawStyle": "line",
-                    "fillOpacity": 10,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "tooltip": false,
-                      "viz": false,
-                      "legend": false
-                    },
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "spanNulls": true,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  },
-                  "mappings": [],
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": null
-                      },
-                      {
-                        "color": "yellow",
-                        "value": 70
-                      },
-                      {
-                        "color": "red",
-                        "value": 85
-                      }
-                    ]
-                  },
-                  "unit": "percent"
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 8,
-                "w": 8,
-                "x": 0,
-                "y": 24
-              },
-              "id": 10,
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "mode": "multi",
-                  "sort": "none"
-                }
-              },
-              "pluginVersion": "10.0.0",
-              "targets": [
-                {
-                  "expr": "100 * (1 - (node_filesystem_avail_bytes{job=\"integrations/node_exporter\",mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs|nsfs\"} / node_filesystem_size_bytes{job=\"integrations/node_exporter\",mountpoint=\"/\",fstype!~\"tmpfs|overlay|squashfs|nsfs\"}))",
-                  "format": "time_series",
-                  "interval": "",
-                  "legendFormat": "{{instance}} /",
-                  "refId": "A"
-                }
-              ],
-              "title": "Node Disk Usage",
-              "type": "timeseries"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
                     "axisLabel": "Temperature",
                     "axisPlacement": "auto",
                     "barAlignment": 0,
@@ -749,8 +682,8 @@ dashboards:
               },
               "gridPos": {
                 "h": 8,
-                "w": 16,
-                "x": 8,
+                "w": 12,
+                "x": 12,
                 "y": 24
               },
               "id": 8,
