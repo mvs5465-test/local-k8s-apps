@@ -62,6 +62,12 @@ spec:
                   "name": "Apps",
                   "items": [
                     {
+                      "name": "Chat",
+                      "icon": "AI",
+                      "url": "http://chat.lan",
+                      "description": "Open WebUI backed by the mini-server Ollama host."
+                    },
+                    {
                       "name": "Jellyfin",
                       "icon": "JF",
                       "url": "http://jellyfin.lan",

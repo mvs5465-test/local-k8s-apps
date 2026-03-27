@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-external
+spec:
+  ports:
+  - name: http
+    port: 11434
+    protocol: TCP
+    targetPort: 11434

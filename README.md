@@ -39,9 +39,11 @@ No standalone bootstrap applications are currently managed from this directory. 
 | | | |
 |---|---|---|
 | 📡 **K8s Monitoring** | Alloy collectors and telemetry routing | [k8s-monitoring-app.yaml](apps/cluster-wave-2/k8s-monitoring-app.yaml) |
+| 🤖 **AI Config** | In-cluster AI wiring such as the external Ollama service alias | [ai-config-app.yaml](apps/cluster-wave-2/ai-config-app.yaml) |
 | 🌌 **Cluster Home** | Custom dark-themed service dashboard | [cluster-home-app.yaml](apps/cluster-wave-2/cluster-home-app.yaml) |
 | 📚 **Cluster Lite Wiki** | Seeded local cluster documentation | [cluster-lite-wiki-app.yaml](apps/cluster-wave-2/cluster-lite-wiki-app.yaml) |
 | 📊 **Gatus** | Uptime monitoring & status page | [gatus-app.yaml](apps/cluster-wave-2/gatus-app.yaml) |
+| 💬 **Open WebUI** | Browser chat UI backed by the mini-server Ollama host | [open-webui-app.yaml](apps/cluster-wave-2/open-webui-app.yaml) |
 | 🎬 **Jellyfin** | Media server | [jellyfin-app.yaml](apps/cluster-wave-2/jellyfin-app.yaml) |
 | 🔔 **GitHub PR Slack Notifier** | Slack notifications for GitHub PR activity | [github-pr-slack-notifier-app.yaml](apps/cluster-wave-2/github-pr-slack-notifier-app.yaml) |
 
