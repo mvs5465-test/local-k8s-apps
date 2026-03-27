@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Cluster News ArgoCD application with Traefik ingress at `news.lan`, Cluster Home navigation, and Gatus health monitoring
 - Jellyfin is back in the active ArgoCD wave set with Traefik ingress, Cluster Home navigation, and Gatus health monitoring restored
 
 ### Removed

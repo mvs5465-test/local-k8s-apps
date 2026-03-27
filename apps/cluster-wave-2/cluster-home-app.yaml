@@ -62,6 +62,12 @@ spec:
                   "name": "Apps",
                   "items": [
                     {
+                      "name": "News",
+                      "icon": "NW",
+                      "url": "http://news.lan",
+                      "description": "Curated RSS feeds, saved stories, and AI briefings."
+                    },
+                    {
                       "name": "Chat",
                       "icon": "AI",
                       "url": "http://chat.lan",
