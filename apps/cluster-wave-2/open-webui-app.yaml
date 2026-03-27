@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: open-webui
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cluster
+  source:
+    repoURL: https://helm.openwebui.com/
+    targetRevision: 12.11.0
+    chart: open-webui
+    helm:
+      releaseName: open-webui
+      values: |
+        ollama:
+          enabled: false
+
+        pipelines:
+          enabled: false
+
+        websocket:
+          enabled: false
+
+        ollamaUrls:
+          - http://ollama-external.ai.svc.cluster.local:11434
+
+        ingress:
+          enabled: true
+          class: traefik
+          host: chat.lan
+
+        persistence:
+          enabled: true
+          size: 2Gi
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+
+        extraEnvVars:
+          - name: WEBUI_AUTH
+            value: "false"
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ai
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      enabled: true
+      prune: true
+      selfHeal: true
