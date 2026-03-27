@@ -15,10 +15,6 @@ spec:
       releaseName: loki-mcp
       values: |
         replicaCount: 1
-        image:
-          repository: ghcr.io/mvs5465-test/loki-mcp-server
-          tag: main
-          pullPolicy: Always
         service:
           type: ClusterIP
           port: 8000
