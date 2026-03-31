@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notes-app
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cluster
+  source:
+    repoURL: https://github.com/mvs5465-test/notes-app
+    targetRevision: main
+    path: chart
+    helm:
+      releaseName: notes-app
+      values: |
+        ingress:
+          host: notes.lan
+          className: traefik
+        persistence:
+          size: 1Gi
+          storageClassName: local-path
+          mountPath: /data
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "25m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: services
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      enabled: true
+      prune: true
+      selfHeal: true
