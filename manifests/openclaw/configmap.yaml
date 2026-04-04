@@ -46,21 +46,21 @@ data:
           "workspace": "~/.openclaw/workspace",
           "model": {
             "primary": "ollama/qwen3.5:9b"
-          },
-          "tools": {
-            "allow": [
-              "k8s_query",
-              "prometheus_query",
-              "loki_query",
-              "cluster_reference"
-            ]
           }
         },
         "list": [
           {
             "id": "cluster-helper",
             "name": "Cluster Helper",
-            "workspace": "~/.openclaw/workspace"
+            "workspace": "~/.openclaw/workspace",
+            "tools": {
+              "allow": [
+                "k8s_query",
+                "prometheus_query",
+                "loki_query",
+                "cluster_reference"
+              ]
+            }
           }
         ]
       }
