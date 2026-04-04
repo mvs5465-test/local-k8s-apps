@@ -32,15 +32,6 @@ data:
           }
         }
       },
-      "models": {
-        "providers": {
-          "ollama": {
-            "api": "ollama",
-            "baseUrl": "http://ollama-external.ai.svc.cluster.local:11434",
-            "models": []
-          }
-        }
-      },
       "agents": {
         "defaults": {
           "workspace": "~/.openclaw/workspace",
