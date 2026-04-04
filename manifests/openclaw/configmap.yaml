@@ -1,0 +1,410 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openclaw-config
+  namespace: ai
+data:
+  openclaw.json: |
+    {
+      "gateway": {
+        "mode": "local",
+        "bind": "loopback",
+        "port": 18789,
+        "auth": {
+          "mode": "token"
+        },
+        "controlUi": {
+          "enabled": true
+        }
+      },
+      "cron": {
+        "enabled": false
+      },
+      "plugins": {
+        "enabled": true,
+        "allow": ["cluster-observe", "ollama"],
+        "entries": {
+          "cluster-observe": {
+            "enabled": true
+          },
+          "ollama": {
+            "enabled": true
+          }
+        }
+      },
+      "models": {
+        "providers": {
+          "ollama": {
+            "api": "ollama",
+            "baseUrl": "http://ollama-external.ai.svc.cluster.local:11434",
+            "models": []
+          }
+        }
+      },
+      "agents": {
+        "defaults": {
+          "workspace": "~/.openclaw/workspace",
+          "model": {
+            "primary": "ollama/qwen3.5:9b"
+          },
+          "tools": {
+            "allow": [
+              "k8s_query",
+              "prometheus_query",
+              "loki_query",
+              "cluster_reference"
+            ]
+          }
+        },
+        "list": [
+          {
+            "id": "cluster-helper",
+            "name": "Cluster Helper",
+            "workspace": "~/.openclaw/workspace"
+          }
+        ]
+      }
+    }
+  AGENTS.md: |
+    # Cluster Helper
+
+    You are a read-only observability and cluster-debugging assistant.
+
+    Constraints:
+    - Use only the allowed tools.
+    - Never claim to have changed cluster state.
+    - Treat completed Jobs and terminal pods carefully; they are not the same as failed workloads.
+    - Prefer explaining the exact logic behind a count or dashboard number.
+    - When a question mentions "dashboard", check the bundled reference notes before guessing.
+
+  cluster-observe.package.json: |
+    {
+      "name": "cluster-observe",
+      "version": "0.1.0",
+      "private": true,
+      "type": "module",
+      "peerDependencies": {
+        "openclaw": ">=2026.4.1"
+      },
+      "peerDependenciesMeta": {
+        "openclaw": {
+          "optional": true
+        }
+      },
+      "openclaw": {
+        "extensions": ["./index.js"]
+      }
+    }
+  cluster-observe.plugin.json: |
+    {
+      "id": "cluster-observe",
+      "contracts": {
+        "tools": [
+          "k8s_query",
+          "prometheus_query",
+          "loki_query",
+          "cluster_reference"
+        ]
+      },
+      "configSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      }
+    }
+  cluster-observe.index.js: |
+    import https from "node:https";
+    import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
+
+    const K8S_TOKEN_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token";
+    const K8S_CA_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt";
+    const K8S_HOST = process.env.KUBERNETES_SERVICE_HOST;
+    const K8S_PORT = process.env.KUBERNETES_SERVICE_PORT_HTTPS || "443";
+    const PROM_URL = "http://prometheus-server.monitoring.svc.cluster.local/api/v1/query";
+    const LOKI_URL = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/query_range";
+
+    const REFERENCES = {
+      "cluster-home-unhealthy": `Cluster Home calculates "unhealthy pods" by fetching all pods from the Kubernetes API and incrementing the unhealthy count whenever a pod phase is not "Running" or not all container statuses are ready. That means terminal Job pods in phase "Succeeded" are counted as unhealthy, even if they completed successfully.`,
+      "observability-endpoints": `Use Prometheus at http://prometheus-server.monitoring.svc.cluster.local and Loki at http://loki.monitoring.svc.cluster.local:3100. Cluster Home's status card is separate from Grafana and is derived from direct Kubernetes API reads.`
+    };
+
+    function safeJson(value) {
+      return JSON.stringify(value, null, 2);
+    }
+
+    async function httpJson(url) {
+      const response = await fetch(url, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(10000)
+      });
+      const text = await response.text();
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} from ${url}: ${text.slice(0, 300)}`);
+      }
+      return text ? JSON.parse(text) : {};
+    }
+
+    async function k8sJson(pathWithQuery) {
+      const token = await import("node:fs/promises").then((fs) => fs.readFile(K8S_TOKEN_PATH, "utf8"));
+      const ca = await import("node:fs/promises").then((fs) => fs.readFile(K8S_CA_PATH));
+      const options = {
+        hostname: K8S_HOST,
+        port: Number(K8S_PORT),
+        path: pathWithQuery,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token.trim()}`
+        },
+        ca
+      };
+      return new Promise((resolve, reject) => {
+        const req = https.request(options, (res) => {
+          let data = "";
+          res.setEncoding("utf8");
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+          res.on("end", () => {
+            if ((res.statusCode || 500) >= 400) {
+              reject(new Error(`Kubernetes API ${res.statusCode}: ${data.slice(0, 300)}`));
+              return;
+            }
+            try {
+              resolve(JSON.parse(data || "{}"));
+            } catch (error) {
+              reject(error);
+            }
+          });
+        });
+        req.on("error", reject);
+        req.setTimeout(10000, () => req.destroy(new Error("Kubernetes API timeout")));
+        req.end();
+      });
+    }
+
+    function buildK8sPath(params) {
+      const namespace = params.namespace?.trim();
+      const name = params.name?.trim();
+      const type = params.resource;
+      const baseByType = {
+        namespaces: "/api/v1/namespaces",
+        nodes: "/api/v1/nodes",
+        pods: namespace ? `/api/v1/namespaces/${namespace}/pods` : "/api/v1/pods",
+        events: namespace ? `/api/v1/namespaces/${namespace}/events` : "/api/v1/events",
+        deployments: namespace ? `/apis/apps/v1/namespaces/${namespace}/deployments` : "/apis/apps/v1/deployments",
+        jobs: namespace ? `/apis/batch/v1/namespaces/${namespace}/jobs` : "/apis/batch/v1/jobs"
+      };
+      const base = baseByType[type];
+      if (!base) {
+        throw new Error(`Unsupported resource: ${type}`);
+      }
+      const path = name ? `${base}/${name}` : base;
+      const search = new URLSearchParams();
+      if (!name) {
+        if (params.labelSelector) search.set("labelSelector", params.labelSelector);
+        if (params.fieldSelector) search.set("fieldSelector", params.fieldSelector);
+        if (params.limit) search.set("limit", String(Math.min(Number(params.limit), 200)));
+      }
+      const query = search.toString();
+      return query ? `${path}?${query}` : path;
+    }
+
+    function summarizePod(item) {
+      const statuses = item.status?.containerStatuses || [];
+      const restarts = statuses.reduce((sum, status) => sum + (status.restartCount || 0), 0);
+      return {
+        namespace: item.metadata?.namespace,
+        name: item.metadata?.name,
+        phase: item.status?.phase,
+        ready: statuses.length > 0 && statuses.every((status) => status.ready === true),
+        restarts,
+        node: item.spec?.nodeName || null,
+        ownerKinds: (item.metadata?.ownerReferences || []).map((ref) => `${ref.kind}/${ref.name}`),
+        reason: item.status?.reason || null,
+        startTime: item.status?.startTime || null
+      };
+    }
+
+    function summarizeJob(item) {
+      return {
+        namespace: item.metadata?.namespace,
+        name: item.metadata?.name,
+        completions: item.spec?.completions ?? null,
+        succeeded: item.status?.succeeded ?? 0,
+        failed: item.status?.failed ?? 0,
+        active: item.status?.active ?? 0,
+        startTime: item.status?.startTime || null,
+        completionTime: item.status?.completionTime || null
+      };
+    }
+
+    function summarizeDeployment(item) {
+      return {
+        namespace: item.metadata?.namespace,
+        name: item.metadata?.name,
+        desired: item.spec?.replicas ?? 1,
+        available: item.status?.availableReplicas ?? 0,
+        ready: item.status?.readyReplicas ?? 0,
+        updated: item.status?.updatedReplicas ?? 0
+      };
+    }
+
+    function summarizeEvent(item) {
+      return {
+        namespace: item.metadata?.namespace,
+        type: item.type || null,
+        reason: item.reason || null,
+        involvedObject: item.involvedObject ? `${item.involvedObject.kind}/${item.involvedObject.name}` : null,
+        message: item.message || null,
+        eventTime: item.eventTime || item.lastTimestamp || item.metadata?.creationTimestamp || null
+      };
+    }
+
+    function summarizeNode(item) {
+      const readyCondition = (item.status?.conditions || []).find((condition) => condition.type === "Ready");
+      return {
+        name: item.metadata?.name,
+        ready: readyCondition?.status === "True",
+        version: item.status?.nodeInfo?.kubeletVersion || null
+      };
+    }
+
+    function summarizeNamespace(item) {
+      return {
+        name: item.metadata?.name,
+        phase: item.status?.phase || null
+      };
+    }
+
+    function summarizeK8s(resource, payload) {
+      if (!payload.items) {
+        return payload;
+      }
+      const mappers = {
+        pods: summarizePod,
+        jobs: summarizeJob,
+        deployments: summarizeDeployment,
+        events: summarizeEvent,
+        nodes: summarizeNode,
+        namespaces: summarizeNamespace
+      };
+      const mapper = mappers[resource];
+      return {
+        resource,
+        count: payload.items.length,
+        items: payload.items.map((item) => mapper(item))
+      };
+    }
+
+    export default definePluginEntry({
+      id: "cluster-observe",
+      name: "Cluster Observe",
+      description: "Read-only Kubernetes, Prometheus, and Loki diagnostics",
+      register(api) {
+        api.registerTool(
+          {
+            name: "k8s_query",
+            description: "Read-only Kubernetes resource query for namespaces, nodes, pods, deployments, jobs, and events.",
+            parameters: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                resource: {
+                  type: "string",
+                  enum: ["namespaces", "nodes", "pods", "deployments", "jobs", "events"]
+                },
+                namespace: { type: "string" },
+                name: { type: "string" },
+                labelSelector: { type: "string" },
+                fieldSelector: { type: "string" },
+                limit: { type: "number" }
+              },
+              required: ["resource"]
+            },
+            async execute(_id, params) {
+              const payload = await k8sJson(buildK8sPath(params));
+              const summary = summarizeK8s(params.resource, payload);
+              return { content: [{ type: "text", text: safeJson(summary) }] };
+            }
+          },
+          { optional: true }
+        );
+
+        api.registerTool(
+          {
+            name: "prometheus_query",
+            description: "Run a read-only instant Prometheus query against the in-cluster monitoring backend.",
+            parameters: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                expr: { type: "string" }
+              },
+              required: ["expr"]
+            },
+            async execute(_id, params) {
+              const url = `${PROM_URL}?${new URLSearchParams({ query: params.expr }).toString()}`;
+              const payload = await httpJson(url);
+              return { content: [{ type: "text", text: safeJson(payload) }] };
+            }
+          },
+          { optional: true }
+        );
+
+        api.registerTool(
+          {
+            name: "loki_query",
+            description: "Run a read-only Loki query_range over a bounded recent time window.",
+            parameters: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                query: { type: "string" },
+                sinceSeconds: { type: "number" },
+                limit: { type: "number" }
+              },
+              required: ["query"]
+            },
+            async execute(_id, params) {
+              const nowNs = BigInt(Date.now()) * 1000000n;
+              const seconds = Math.max(60, Math.min(Number(params.sinceSeconds || 1800), 86400));
+              const startNs = nowNs - BigInt(seconds) * 1000000000n;
+              const search = new URLSearchParams({
+                query: params.query,
+                start: startNs.toString(),
+                end: nowNs.toString(),
+                limit: String(Math.max(1, Math.min(Number(params.limit || 50), 200))),
+                direction: "backward"
+              });
+              const payload = await httpJson(`${LOKI_URL}?${search.toString()}`);
+              return { content: [{ type: "text", text: safeJson(payload) }] };
+            }
+          },
+          { optional: true }
+        );
+
+        api.registerTool(
+          {
+            name: "cluster_reference",
+            description: "Return bundled notes about local cluster dashboard and observability behavior.",
+            parameters: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                topic: {
+                  type: "string",
+                  enum: ["cluster-home-unhealthy", "observability-endpoints"]
+                }
+              },
+              required: ["topic"]
+            },
+            async execute(_id, params) {
+              const text = REFERENCES[params.topic];
+              return { content: [{ type: "text", text }] };
+            }
+          },
+          { optional: true }
+        );
+      }
+    });

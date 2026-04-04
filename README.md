@@ -44,6 +44,7 @@ No standalone bootstrap applications are currently managed from this directory. 
 | 📚 **Cluster Lite Wiki** | Seeded local cluster documentation | [cluster-lite-wiki-app.yaml](apps/cluster-wave-2/cluster-lite-wiki-app.yaml) |
 | 📊 **Gatus** | Uptime monitoring & status page | [gatus-app.yaml](apps/cluster-wave-2/gatus-app.yaml) |
 | 💬 **Open WebUI** | Browser chat UI backed by the mini-server Ollama host | [open-webui-app.yaml](apps/cluster-wave-2/open-webui-app.yaml) |
+| 🧠 **OpenClaw** | Internal-only read-only cluster assistant for ad hoc K8s, Prometheus, and Loki questions | [openclaw-app.yaml](apps/cluster-wave-2/openclaw-app.yaml) |
 | 🎬 **Jellyfin** | Media server | [jellyfin-app.yaml](apps/cluster-wave-2/jellyfin-app.yaml) |
 | 🔔 **GitHub PR Slack Notifier** | Slack notifications for GitHub PR activity | [github-pr-slack-notifier-app.yaml](apps/cluster-wave-2/github-pr-slack-notifier-app.yaml) |
 

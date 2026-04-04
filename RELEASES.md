@@ -5,6 +5,8 @@
 ### Added
 - Cluster News ArgoCD application with Traefik ingress at `news.lan`, Cluster Home navigation, and Gatus health monitoring
 - Jellyfin is back in the active ArgoCD wave set with Traefik ingress, Cluster Home navigation, and Gatus health monitoring restored
+- OpenClaw ArgoCD application with a read-only in-cluster observability plugin for Kubernetes, Prometheus, and Loki queries
+- External Secrets fan-out manifest for the OpenClaw gateway token in the `ai` namespace
 
 ### Removed
 - Outline application, host-mounted dependencies, and related dashboard/health-check references
@@ -33,6 +35,7 @@
 - github-pr-slack-notifier now deploys to its own namespace (`github-pr-slack-notifier`) with matching ESO secret fan-out
 - Grafana canary heartbeat alert is removed in favor of the dedicated CronJob status reporter message
 - Cluster health reporter heartbeat now includes styled Slack payloads, trend arrows, sparklines, mood badges, top talkers, and periodic celebration/personality callouts
+- The `ai` namespace now includes an internal-only OpenClaw service with read-only RBAC for ad hoc cluster debugging
 
 ### Fixed
 - Grafana alert contact point now uses native Slack notifier payload formatting to avoid incoming webhook HTTP 400 payload mismatch errors
