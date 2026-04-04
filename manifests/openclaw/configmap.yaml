@@ -45,7 +45,7 @@ data:
         "defaults": {
           "workspace": "~/.openclaw/workspace",
           "model": {
-            "primary": "ollama/qwen3.5:9b"
+            "primary": "ollama/llama3.2:3b"
           }
         },
         "list": [
