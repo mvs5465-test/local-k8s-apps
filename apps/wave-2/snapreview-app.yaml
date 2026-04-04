@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapreview
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: cluster
+  source:
+    repoURL: https://github.com/mvs5465-test/snapreview
+    targetRevision: main
+    path: chart
+    helm:
+      releaseName: snapreview
+      values: |
+        image:
+          repository: ghcr.io/mvs5465-test/snapreview
+          tag: main
+          pullPolicy: Always
+        ingress:
+          enabled: true
+          className: nginx
+          hosts:
+            - host: snapreview.lan
+              paths:
+                - path: /
+                  pathType: Prefix
+        env:
+          GITHUB_MODE: "ghec"
+          GITHUB_ORG: "mvs5465-test"
+          GITHUB_WEB_BASE_URL: "https://github.com"
+          GITHUB_API_BASE_URL: "https://api.github.com"
+          GITHUB_CLIENT_ID: "Ov23liM85JepaIIgpai4"
+          GITHUB_OAUTH_SCOPES: "repo read:org"
+          ALLOWED_GITHUB_USERS: "mvs5465"
+          APP_BASE_URL: "http://snapreview.lan"
+          OTEL_EXPORTER_OTLP_ENDPOINT: "http://k8s-monitoring-alloy-receiver.monitoring.svc.cluster.local:4318/v1/traces"
+          SESSION_STORE: "redis"
+          SESSION_COOKIE_SECURE: "false"
+          TRUST_PROXY: "1"
+          ALLOWED_ORIGINS: "http://snapreview.lan"
+        secretEnv:
+          name: snapreview-secret
+        metrics:
+          enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: services
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      enabled: true
+      prune: true
+      selfHeal: true
