@@ -32,9 +32,15 @@ spec:
         - -c
         - |
           set -eu
+          mkdir -p /home/node/.openclaw/agents/main/agent
+          mkdir -p /home/node/.openclaw/agents/cluster-helper/agent
           mkdir -p /home/node/.openclaw/workspace/references
           mkdir -p /home/node/.openclaw/extensions/cluster-observe
           cp /bootstrap/config/openclaw.json /home/node/.openclaw/openclaw.json
+          cp /bootstrap/config/ollama.auth-profiles.json /home/node/.openclaw/agents/main/agent/auth-profiles.json
+          cp /bootstrap/config/ollama.auth-profiles.json /home/node/.openclaw/agents/cluster-helper/agent/auth-profiles.json
+          cp /bootstrap/config/ollama.models.json /home/node/.openclaw/agents/main/agent/models.json
+          cp /bootstrap/config/ollama.models.json /home/node/.openclaw/agents/cluster-helper/agent/models.json
           cp /bootstrap/config/AGENTS.md /home/node/.openclaw/workspace/AGENTS.md
           cp /bootstrap/extensions/cluster-observe/package.json /home/node/.openclaw/extensions/cluster-observe/package.json
           cp /bootstrap/extensions/cluster-observe/openclaw.plugin.json /home/node/.openclaw/extensions/cluster-observe/openclaw.plugin.json
@@ -135,6 +141,10 @@ spec:
           items:
           - key: openclaw.json
             path: config/openclaw.json
+          - key: ollama.auth-profiles.json
+            path: config/ollama.auth-profiles.json
+          - key: ollama.models.json
+            path: config/ollama.models.json
           - key: AGENTS.md
             path: config/AGENTS.md
           - key: cluster-observe.package.json
