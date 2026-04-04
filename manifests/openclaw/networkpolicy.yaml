@@ -52,6 +52,9 @@ spec:
       port: 3100
   - to:
     - ipBlock:
+        # `ollama-external` is a selectorless Service backed by the host-level Ollama
+        # runtime on the mini-server, so NetworkPolicy cannot target it with pod selectors.
+        # If the Ollama host moves, update this CIDR alongside manifests/ai/ollama-external-*.
         cidr: 192.168.1.173/32
     ports:
     - protocol: TCP
