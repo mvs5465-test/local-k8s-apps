@@ -122,6 +122,9 @@ data:
     const K8S_PORT = process.env.KUBERNETES_SERVICE_PORT_HTTPS || "443";
     const PROM_URL = "http://prometheus-server.monitoring.svc.cluster.local/api/v1/query";
     const LOKI_URL = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/query_range";
+    const MAX_QUERY_LENGTH = 512;
+    const MAX_PROM_TIMEOUT_SECONDS = 5;
+    const SAFE_K8S_NAME = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/;
 
     const REFERENCES = {
       "cluster-home-unhealthy": `Cluster Home calculates "unhealthy pods" by fetching all pods from the Kubernetes API and incrementing the unhealthy count whenever a pod phase is not "Running" or not all container statuses are ready. That means terminal Job pods in phase "Succeeded" are counted as unhealthy, even if they completed successfully.`,
@@ -130,6 +133,35 @@ data:
 
     function safeJson(value) {
       return JSON.stringify(value, null, 2);
+    }
+
+    function requireValidK8sName(name, field) {
+      if (!SAFE_K8S_NAME.test(name)) {
+        throw new Error(`${field} must be a valid Kubernetes resource name`);
+      }
+    }
+
+    function requireSafeQueryText(query, kind) {
+      if (typeof query !== "string") {
+        throw new Error(`${kind} query must be a string`);
+      }
+      if (query.length === 0 || query.length > MAX_QUERY_LENGTH) {
+        throw new Error(`${kind} query must be between 1 and ${MAX_QUERY_LENGTH} characters`);
+      }
+      if (/[\r\n\0]/.test(query)) {
+        throw new Error(`${kind} query must be a single line`);
+      }
+    }
+
+    function requireSafeLokiQuery(query) {
+      requireSafeQueryText(query, "Loki");
+      const regexOperators = (query.match(/(?:\|~|!~|=~)/g) || []).length;
+      if (regexOperators > 2) {
+        throw new Error("Loki query uses too many regex operators");
+      }
+      if (/\.\*(?:\.\*){2,}/.test(query)) {
+        throw new Error("Loki query contains an excessively broad regex pattern");
+      }
     }
 
     async function httpJson(url) {
@@ -187,6 +219,12 @@ data:
       const namespace = params.namespace?.trim();
       const name = params.name?.trim();
       const type = params.resource;
+      if (namespace) {
+        requireValidK8sName(namespace, "namespace");
+      }
+      if (name) {
+        requireValidK8sName(name, "name");
+      }
       const baseByType = {
         namespaces: "/api/v1/namespaces",
         nodes: "/api/v1/nodes",
@@ -344,7 +382,11 @@ data:
               required: ["expr"]
             },
             async execute(_id, params) {
-              const url = `${PROM_URL}?${new URLSearchParams({ query: params.expr }).toString()}`;
+              requireSafeQueryText(params.expr, "Prometheus");
+              const url = `${PROM_URL}?${new URLSearchParams({
+                query: params.expr,
+                timeout: `${MAX_PROM_TIMEOUT_SECONDS}s`
+              }).toString()}`;
               const payload = await httpJson(url);
               return { content: [{ type: "text", text: safeJson(payload) }] };
             }
@@ -367,6 +409,7 @@ data:
               required: ["query"]
             },
             async execute(_id, params) {
+              requireSafeLokiQuery(params.query);
               const nowNs = BigInt(Date.now()) * 1000000n;
               const seconds = Math.max(60, Math.min(Number(params.sinceSeconds || 1800), 86400));
               const startNs = nowNs - BigInt(seconds) * 1000000000n;
